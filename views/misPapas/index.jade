@@ -1,0 +1,76 @@
+extends ../layout
+block append head
+  script(type='text/javascript', src='/javascripts/jquery.cycle2.min.js')
+block content
+  div(style='float:left')
+    #lina.fotosMisPapas(style='margin-right:100px')
+      img(src='/images/misPapas/Lina01.jpg', width='250')
+      img(src='/images/misPapas/Lina02.jpg', width='250')
+      img(src='/images/misPapas/Lina03.jpg', width='250')
+      img(src='/images/misPapas/Lina04.jpg', width='250')    
+      img(src='/images/misPapas/Lina05.jpg', width='250')
+      img(src='/images/misPapas/Lina06.jpg', width='250')
+      img(src='/images/misPapas/Lina07.jpg', width='250')
+    .datosPersonales
+      table(cellspacing='3')
+        tr
+          td.nombreCampo Nombre
+          td.valorCampo Lina Mar&iacute;a Vivas
+        tr
+          td.nombreCampo Cumplea&ntilde;os
+          td.valorCampo 14 de Noviembre
+        tr
+          td.nombreCampo Email
+          td.valorCampo lmvivasn@gmail.com
+    
+  div(style='float:left')
+    #linaJesus.fotosMisPapas(style='margin-right:100px')
+      img(src='/images/misPapas/LinaJesus01.jpg', width='250')
+      img(src='/images/misPapas/LinaJesus02.jpg', width='250')
+      img(src='/images/misPapas/LinaJesus03.jpg', width='250')
+      img(src='/images/misPapas/LinaJesus04.jpg', width='250')
+      img(src='/images/misPapas/LinaJesus05.jpg', width='250')
+      img(src='/images/misPapas/LinaJesus06.jpg', width='250')
+      img(src='/images/misPapas/LinaJesus07.jpg', width='250')
+
+  div(style='float:left')
+    #jesus.fotosMisPapas
+      img(src='/images/misPapas/Jesus01.jpg', width='250')
+      img(src='/images/misPapas/Jesus02.jpg', width='250')
+      img(src='/images/misPapas/Jesus03.jpg', width='250')
+      img(src='/images/misPapas/Jesus04.jpg', width='250')
+      img(src='/images/misPapas/Jesus05.jpg', width='250')
+      img(src='/images/misPapas/Jesus06.jpg', width='250')
+      img(src='/images/misPapas/Jesus07.jpg', width='250')
+    .datosPersonales
+      table(cellspacing='3')
+        tr
+          td.nombreCampo Nombre
+          td.valorCampo Jes&uacute;s Barreda
+        tr
+          td.nombreCampo Cumplea&ntilde;os
+          td.valorCampo 16 de Septiembre
+        tr
+          td.nombreCampo Email
+          td.valorCampo jesus.barreda@gmail.com
+
+  script.
+    $(window).load(function() {
+      $('#lina').cycle({
+        fx: 'fade',
+        timeout: 5000,
+        speed: 2000
+      });
+    
+      $('#linaJesus').cycle({
+        fx: 'fade',
+        timeout: 5000,
+        speed: 2500
+      });
+    
+      $('#jesus').cycle({
+        fx: 'fade',
+        timeout: 5000,
+        speed: 3000
+      });
+    });

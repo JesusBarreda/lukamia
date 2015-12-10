@@ -1,0 +1,31 @@
+extends ../layout
+block content
+  form(action='/albumes', method='post')
+    .esquinasRedondas.azul(style='margin-top:20px; width:280px')
+      h2(style='color:#006699') Nuevo &aacute;lbum
+      table
+        tr
+          td.nombreCampo T&iacute;tulo
+          td: input#titulo(type='text', name='titulo', size='40')
+        tr
+          td
+          td
+            input#btSubmit(type='submit', name='btSubmit', value='aceptar')
+            input#btCancelar(type='button', name='btCancelar', value='cancelar', style='margin-left:5px')
+          
+  script.
+    $('input[type="button"]').click(function() {
+      window.location = '/albumes';
+    });
+  
+    $('form').submit(function() {
+      if($('#titulo').val().length == 0) {
+        alert('Introduce el título del álbum');
+        $('#titulo').focus();
+        return false;
+      }
+    
+      $('input[type="submit"]').prop('disabled', true);
+      $('input[type="button"]').prop('disabled', true);
+      return true;
+    });

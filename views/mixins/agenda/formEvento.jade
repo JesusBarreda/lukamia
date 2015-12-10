@@ -1,0 +1,39 @@
+mixin formEvento(evento)
+  input(type='hidden', id='#{evento._id}_tipo', name='#{evento._id}_tipo', value='#{evento.tipo}')
+  - if(evento.tipo == 'PUNTUAL')
+      - var fecha = evento.fecha.split('-');
+      input(type='hidden', id='#{evento._id}_dia', name='#{evento._id}_dia', value='#{fecha[0]}')
+      input(type='hidden', id='#{evento._id}_mes', name='#{evento._id}_mes', value='#{fecha[1]}')
+      input(type='hidden', id='#{evento._id}_anyo', name='#{evento._id}_anyo', value='#{fecha[2]}')
+  - if(evento.tipo == 'SEMANAL')
+      - var fecha = evento.fecha.split(',');
+      - each diaSemana in fecha
+          input(type='hidden', id='#{evento._id}_#{diaSemana}', name='#{evento._id}_#{diaSemana}', value='#{diaSemana}')
+  - if(evento.tipo == 'MENSUAL')
+      input(type='hidden', id='#{evento._id}_dia', name='#{evento._id}_dia', value='#{evento.fecha}')
+  - if(evento.tipo == 'ANUAL')
+      - var fecha = evento.fecha.split('-');
+      input(type='hidden', id='#{evento._id}_dia', name='#{evento._id}_dia', value='#{fecha[0]}')
+      input(type='hidden', id='#{evento._id}_mes', name='#{evento._id}_mes', value='#{fecha[1]}')
+  - if(evento.horaInicio)
+      - var horaInicio = evento.horaInicio.split(':');
+      input(type='hidden', id='#{evento._id}_horaInicio', name='#{evento._id}_horaInicio', value='#{horaInicio[0]}')
+      input(type='hidden', id='#{evento._id}_minutoInicio', name='#{evento._id}_minutoInicio', value='#{horaInicio[1]}')
+  - if(evento.horaFin)
+      - var horaFin = evento.horaFin.split(':');
+      input(type='hidden', id='#{evento._id}_horaFin', name='#{evento._id}_horaFin', value='#{horaFin[0]}')
+      input(type='hidden', id='#{evento._id}_minutoFin', name='#{evento._id}_minutoFin', value='#{horaFin[1]}')
+  input(type='hidden', id='#{evento._id}_texto', name='#{evento._id}_texto', value='#{evento.texto}')
+  - if(evento.lugar)
+      input(type='hidden', id='#{evento._id}_lugar', name='#{evento._id}_lugar', value='#{evento.lugar}')
+  - if(evento.fechaInicio)
+      - var fechaInicio = fechaHora.fechaToString(evento.fechaInicio, 'DD-MM-YYYY').split('-');
+      input(type='hidden', id='#{evento._id}_diaFechaInicio', name='#{evento._id}_diaFechaInicio', value='#{fechaInicio[0]}')
+      input(type='hidden', id='#{evento._id}_mesFechaInicio', name='#{evento._id}_mesFechaInicio', value='#{fechaInicio[1]}')
+      input(type='hidden', id='#{evento._id}_anyoFechaInicio', name='#{evento._id}_anyoFechaInicio', value='#{fechaInicio[2]}')
+  - if(evento.fechaFin)
+      - var fechaFin = fechaHora.fechaToString(evento.fechaFin, 'DD-MM-YYYY').split('-');
+      input(type='hidden', id='#{evento._id}_diaFechaFin', name='#{evento._id}_diaFechaFin', value='#{fechaFin[0]}')
+      input(type='hidden', id='#{evento._id}_mesFechaFin', name='#{evento._id}_mesFechaFin', value='#{fechaFin[1]}')
+      input(type='hidden', id='#{evento._id}_anyoFechaFin', name='#{evento._id}_anyoFechaFin', value='#{fechaFin[2]}')
+      

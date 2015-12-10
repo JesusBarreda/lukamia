@@ -1,0 +1,69 @@
+extends ../layout
+block append head
+  script(type='text/javascript', src='/javascripts/md5-min.js')
+block content
+  if(infoMessage)
+    #info.info.textLeft(style='width:220px; margin-top:20px') #{infoMessage}
+
+  form(action='/admin/claves', method='post')
+    input#_method(type='hidden', name='_method', value='put')
+    .esquinasRedondas.azul(style='margin-top:20px; width:320px; float:left')
+      h2(style='color:#006699') Cambiar claves de acceso
+      table
+        tr
+          td.nombreCampo Role
+          td
+            select#role(name='role', size='1')
+              option(value='USER') USER
+              option(value='ADMIN') ADMIN
+        tr
+          td.nombreCampo Clave de acceso
+          td: input#claveAcceso(type='password', name='claveAcceso')
+        tr
+          td.nombreCampo Confirmaci&oacute;n clave de acceso
+          td: input#confirmacionClaveAcceso(type='password', name='confirmacionClaveAcceso')
+        tr
+          td
+          td
+            input#btSubmit(type='submit', name='btSubmit', value='aceptar')
+            input#btCancelar(type='button', name='btCancelar', value='cancelar', style='margin-left:5px')
+  script.
+    $('form').submit(function() {
+      if($('#claveAcceso').val() == '') {
+        alert('Debes indicar la nueva clave de acceso');
+        $('#claveAcceso').focus();
+        return false;
+      }
+    
+      if($('#confirmacionClaveAcceso').val() == '') {
+        alert('Debes confirmar la nueva clave de acceso');
+        $('#confirmacionClaveAcceso').focus();
+        return false;
+      }
+    
+      if($('#claveAcceso').val() != $('#confirmacionClaveAcceso').val()) {
+        alert('La confirmación de la clave de acceso no es válida');
+        $('#confirmacionClaveAcceso').focus();  
+        return false;
+      }
+    
+      $('input[type="submit"]').prop('disabled', true);
+      $('input[type="button"]').prop('disabled', true);
+      $('#claveAcceso').val(hex_md5($('#claveAcceso').val()));
+      $('#confirmacionClaveAcceso').val(hex_md5($('#confirmacionClaveAcceso').val()));    
+      return true;
+    });
+  
+    $('#btCancelar').click(function() {
+      $('input[type="submit"]').prop('disabled', true);
+      $('input[type="button"]').prop('disabled', true);
+      window.location = '/admin';    
+    });
+  
+    $(function() {
+      if($('#info')) {
+        setTimeout(function() {
+          $('#info').fadeOut(1000);
+        }, 3000);
+      }
+    });

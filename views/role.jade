@@ -1,0 +1,35 @@
+extends layout
+block append head
+  script(type='text/javascript', src='/javascripts/md5-min.js')  
+block content
+  form(action='/role', method='post')
+    .autentificacion
+      div Clave de acceso
+      div: input#claveAcceso(type='password', name='claveAcceso', placeholder='clave de acceso')
+      div: input#btSubmit(type='submit', name='btSubmit', value='aceptar')
+
+  if(warningMessage)
+    .warning.textCenter(style='width:200px; margin-left:auto; margin-right:auto; margin-top:30px') #{warningMessage}
+  
+  .footer #{fecha} - La web de Luka &amp; Mia &copy; v#{version}
+
+  script.
+    $('#claveAcceso').click(function() {
+      this.placeholder='';
+      $('div.warning').hide();
+    });
+
+    $('form').submit(function() {
+      if($('#claveAcceso').val().length==0) {
+        alert('Introduce la clave de acceso');
+        return false;
+      }
+
+      $('input[type="submit"]').attr('disabled', 'disabled');
+      $('#claveAcceso').val(hex_md5($('#claveAcceso').val()));
+      return true;
+    });
+    
+    $(function() {
+      $('#claveAcceso').focus();
+    });

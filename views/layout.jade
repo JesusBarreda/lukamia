@@ -1,0 +1,14 @@
+doctype html
+html
+  head
+    title La web de Luka & Mia
+    block head
+      link(type='text/css', rel='stylesheet', href='/stylesheets/style.css')
+      script(type='text/javascript', src='/javascripts/jquery-1.11.0.min.js')
+  body
+    #cabecera
+      h1 La web de Luka & Mia
+    if(session && session.usuario && session.usuario.role && session.usuario.id)
+      include ./includes/menu
+    #body
+      block content

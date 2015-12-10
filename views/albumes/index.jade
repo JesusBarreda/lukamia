@@ -1,0 +1,83 @@
+extends ../layout
+block append head
+  script(type='text/javascript', src='/javascripts/moment.min.js')
+  script(type='text/javascript', src='/javascripts/es.js')
+block content
+  - var role = session.usuario.role._id;
+  - var separador = '|';
+
+  form(action='/albumes', method='post', style='margin-top:15px')
+    div
+      div(style='float:left')
+        label.nombreCampo(for='orden') Ordenar por
+        select#orden(name='orden', size='1', style='margin-left:10px')
+          if(orden == 'fechaCreacion')
+            option(value='fechaCreacion', selected='selected') fecha creaci&oacute;n
+          else
+            option(value='fechaCreacion') fecha creaci&oacute;n
+          
+          if(orden == 'fechaModificacion')
+            option(value='fechaModificacion', selected='selected') fecha modificaci&oacute;n
+          else
+            option(value='fechaModificacion') fecha modificaci&oacute;n
+          
+      if(role == 'ADMIN') 
+        div(style='float:right; padding-right:10px')
+          .separadorEnlaces(style='float:left') #{separador}&nbsp;
+          div(style='float:left; height:12px; padding:2px'): a.enlace(href='/albumes/crear') Nuevo &aacute;lbum
+          .separadorEnlaces(style='float:left') &nbsp;#{separador}
+        
+  div(style='clear:both')
+    if(albumes.length == 0)
+      p(style='padding-top:10px; color:#777777'): |No hay &aacute;lbumes publicados
+    each album in albumes
+      .album
+        .fotoPortadaAlbum(onclick="visualizarAlbum('#{album._id}')", title='Visualizar álbum')
+          if(album.fotoPortada)
+            img(src='/temp/' + album.fotoPortada, height='150')
+          else
+            div(style='width:100%; height:100%; border:solid 1px #CCCCCC; background-color:#EEEEEE; color:#777777; text-align:center')
+              div(style='padding-top:60px') Sin foto de portada
+        .descripcionAlbum
+          .tituloAlbum
+            if(role == 'ADMIN')
+              a(href='/albumes/#{album._id}', title='Modificar título') #{album.titulo}
+            else
+              |#{album.titulo}
+          .fechaAlbum Creado #{fechaHora.formatFromNow(album.fechaCreacion)}
+          .fechaAlbum Modificado #{fechaHora.formatFromNow(album.fechaModificacion)}
+          if(role == 'ADMIN')
+            .separadorEnlaces(style='float:left; padding-top:3px') #{separador}&nbsp;
+            div(style='float:left; height:12px; padding-top:4px'): a.enlace(href='/albumes/#{album._id}/fotos/publicar') Publicar foto
+            .separadorEnlaces(style='float:left; padding-top:3px') &nbsp;#{separador}&nbsp;
+            div(style='float:left; height:12px; padding-top:4px'): a.enlace(href="javascript:eliminarAlbum('#{album._id}')") Eliminar &aacute;lbum
+            .separadorEnlaces(style='float:left; padding-top:3px') &nbsp;#{separador}
+
+  script.
+    $('#orden').change(function() {
+      window.location = '/albumes/orden/' + $('#orden').val();
+    });
+
+    function visualizarAlbum(idAlbum) {
+      window.location = '/albumes/' + idAlbum + '/fotos';
+    }
+  
+    function eliminarAlbum(idAlbum) {
+      var msg = '¿Estás seguro de querer eliminar el álbum?';
+      if(confirm(msg)) {
+        $.ajax({
+          type: 'delete',
+          url: '/albumes/' + idAlbum,
+          success: function(data) {
+            if(data.numFotos > 0) {
+              alert('El álbum no puede ser eliminado porque tiene fotos publicadas');
+            }
+            else {
+              alert('El álbum ha sido eliminado');
+              window.location = '/albumes';
+            }
+          }
+        });
+      }
+    }
+    

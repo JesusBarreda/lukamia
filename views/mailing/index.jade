@@ -1,0 +1,64 @@
+extends ../layout
+block append head
+  script(type='text/javascript', src='/javascripts/funciones.js')
+block content
+  if(msg)
+    .textLeft#info(style='width:450px; margin-top:20px', class='#{tipoMsg}') #{msg}
+      
+  form#formMailing(name='formMailing', action='/mailing/configurar', method='post', style='margin-top:20px')
+    .esquinasRedondas.azul(style='margin-top:20px; width:400px')
+      h2(style='color:#006699') Mailing
+      label.nombreCampo Deseo que
+      div(style='margin-top:5px; margin-bottom:10px')
+        select#opcion(name='opcion', size='1', onchange='cambioOpcion()')
+          if(opcion == 'alta')
+            option(value='alta', selected='selected') se me notifique por correo cuando haya nuevas publicaciones
+          else
+            option(value='alta') se me notifique por correo cuando haya nuevas publicaciones
+          if(opcion == 'baja')
+            option(value='baja', selected='selected') se de dé de baja de la lista de distribución
+          else
+            option(value='baja') se dé de baja de la lista de distribución
+      label.nombreCampo#labelEmail A la dirección
+      div(style='margin-top:5px')
+        input#email(type='text', name='email', size='50', value='#{email ? email : ""}')
+      div(style='margin-top:10px')
+        input(type='button', name='btAceptar', value='aceptar', onclick='aceptar()')
+        
+  script.
+    function cambioOpcion() {
+      var opcion = $('#opcion').val();
+      if(opcion == 'alta') {
+        $('#labelEmail').html('A la dirección');
+      }
+      else {
+        $('#labelEmail').html('La dirección');
+      }
+    }
+    
+    function aceptar() {
+      var email = $('#email');
+      
+      if(email.val().length == 0) {
+        alert('Debes especificar tu dirección de correo');
+        email.focus();
+        return;
+      }
+      
+      if(!emailCorrecto(email.val())) {
+        alert('El formato de la dirección de correo especificada no es correcto');
+        email.focus();
+        return;
+      }
+      
+      $('input[type="button"]').prop('disabled', true);
+      $('#formMailing').submit();
+    }
+    
+    $(function() {
+      if($('#info')) {
+        setTimeout(function() {
+          $('#info').fadeOut(1000);
+        }, 3000);
+      }
+    });

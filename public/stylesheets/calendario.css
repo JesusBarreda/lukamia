@@ -1,0 +1,80 @@
+div.calendario {
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  border: solid 2px;
+  border-color: #006699;
+  background-color: #EFFBFB;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-box-shadow: 5px 5px 5px #CCCCCC;
+  -moz-box-shadow: 5px 5px 5px #CCCCCC;
+  font-family: arial;
+  font-size: 12px;
+  color: #444444;
+}
+
+th.calMesAnyo {
+  font-size: 13px;
+  color: #006699;
+}
+
+th.calDiaSemana {
+  font-weight: bold;
+  background-color: #0099CC;
+  color: #FFFFFF;
+}
+
+td.calDiaFueraMes {
+  color: #AAAAAA;
+}
+
+td.calDiaSabado {
+  color: #0099CC;
+}
+
+td.calDiaDomingo {
+  color: #FF0000;
+}
+
+td.calDiaActual {
+  border-color: #339966;
+  border-width: 1px;
+  border-style: solid;
+}
+
+td.calDiaSabado a {
+  color: #0099CC;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+td.calDiaDomingo a {
+  color: #FF0000;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+td a {
+  color: #444444;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+td a:hover {
+  font-weight: bold;
+  color: #FF6600;
+  text-decoration: none;
+}
+
+td.diaConInfo {
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #EEEEEE;
+}
+
+td.diaSinInfo {
+  cursor: pointer;  
+}

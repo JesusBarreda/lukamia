@@ -1,0 +1,109 @@
+extends ../layout
+block content
+  if(infoMessage)
+    #info.info.textLeft(style='width:220px; margin-top:20px') #{infoMessage}
+  
+  form(method='post')
+    input#_method(type='hidden', name='_method')
+    .esquinasRedondas.azul(style='margin-top:20px; width:500px; float:left')
+      h2(style='color:#006699') Notificaciones
+      div(style='float:left; width:140px; padding:10px; background-color:#E1EEEE')
+        table
+          tr: td: font(style='font-size:14px; font-weight:bold; color:#006699') Configuraci&oacute;n
+          tr: td(height='10')
+          tr
+            td.nombreCampo
+              - if(funcContains(notificaciones.eventos,'COMENTARIO_FOTO'))
+                  input#comentarioFoto(type='checkbox', name='comentarioFoto', value='COMENTARIO_FOTO', checked='checked')
+              - else
+                  input#comentarioFoto(type='checkbox', name='comentarioFoto', value='COMENTARIO_FOTO')
+              |&nbsp;Comentarios fotos
+          tr
+            td.nombreCampo
+              - if(funcContains(notificaciones.eventos,'COMENTARIO_BLOG'))
+                  input#comentarioBlog(type='checkbox', name='comentarioBlog', value='COMENTARIO_BLOG', checked='checked')
+              - else
+                  input#comentarioBlog(type='checkbox', name='comentarioBlog', value='COMENTARIO_BLOG')
+              |&nbsp;Comentarios blog
+          tr
+            td.nombreCampo
+              - if(funcContains(notificaciones.eventos,'EVENTO_AGENDA'))
+                  input#eventoAgenda(type='checkbox', name='eventoAgenda', value='EVENTO_AGENDA', checked='checked')
+              - else
+                  input#eventoAgenda(type='checkbox', name='eventoAgenda', value='EVENTO_AGENDA')
+              |&nbsp;Eventos agenda
+          tr
+            td(height='10')
+          tr
+            td
+              input#btModificarEventos(type='button', name='btModificarEventos', value='aceptar')
+              input#btCancelar(type='button', name='btCancelar', value='cancelar', style='margin-left:5px')
+
+      div(style='float:right; width:300px; padding:10px; background-color:#E1EEEE')
+        table
+          tr: td: font(style='font-size:14px; font-weight:bold; color:#006699') Lista de distribuci&oacute;n
+          tr: td(height='5')
+          tr
+            td: input#email(type='text', name='email', size='40')
+            td: img(src='/images/add.gif', style='vertical-align:middle; cursor:pointer', title='A&ntilde;adir email', onclick='addEmail()')
+          tr: td(height='2')
+        
+          - each email in notificaciones.listaDistribucion
+              tr
+                td(bgcolor='#FFFFFF', style='padding-left:10px; padding-top:3px; padding-bottom:3px; color:brown') #{email}
+                td: img(src='/images/del.gif', style='vertical-align:middle; cursor:pointer', title='Eliminar email', onclick='delEmail("#{email}")')
+              
+  script.
+    $('#btModificarEventos').click(function() {
+      $('input[type="button"]').prop('disabled', true);
+      $('form').attr('action', '/admin/notificaciones');
+      $('#_method').val('put');
+      $('form').submit();
+    });
+  
+    $('#btCancelar').click(function() {
+      $('input[type="button"]').prop('disabled', true);
+      window.location = '/admin';
+    });
+  
+    function addEmail() {
+      if($('#email').val() == '') {
+        alert('Debes indicar la cuenta de correo');
+        $('#email').focus();
+        return;
+      }
+      $('input[type="button"]').prop('disabled', true);
+      $('form').attr('action', '/admin/notificaciones');
+      $('#_method').val('post');
+      $('form').submit();
+    }
+  
+    function delEmail(email) {
+      if(confirm('¿Estás seguro de querer eliminar la cuenta de correo?')) {
+        $('input[type="button"]').prop('disabled', true);
+        $('form').attr('action', '/admin/notificaciones');
+        $('#_method').val('delete');
+        $('#email').val(email);
+        $('form').submit();
+      }
+    }
+  
+    $(function() {
+      $('form').keypress(function(event) {
+        if(event == 13) {
+          return false;
+        }
+      });
+    
+      $('input').keypress(function(event) {
+        if(event.which == 13) {
+          return false;
+        }
+      });
+    
+      if($('#info')) {
+        setTimeout(function() {
+          $('#info').fadeOut(1000);
+        }, 3000);
+      }
+    });

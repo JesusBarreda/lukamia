@@ -1,0 +1,14 @@
+extends ../layout
+block content
+  - var separador = '|';
+  
+  div(style='margin-top:15px')
+    .separadorEnlaces(style='float:left') #{separador}&nbsp;
+    div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='/admin/claves') Claves acceso
+    .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+    div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='/admin/notificaciones') Notificaciones
+    .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+    div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='/admin/accesos') Accesos
+    .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+    div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='/admin/mailing') Mailing
+    .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;    

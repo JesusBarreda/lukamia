@@ -1,0 +1,95 @@
+- var role = session.usuario.role._id;
+- var menu = session.usuario.menu;
+
+#menu
+  if(menu == 'misPapas')
+    #menuMisPapas.botonMenuSel(style='float:left')
+      |Mis pap&aacute;s
+  else
+    #menuMisPapas.botonMenu(style='float:left')
+      |Mis pap&aacute;s
+
+  if(menu == 'fotos')
+    #menuFotos.botonMenuSel(style='float:left')
+      |Fotos
+  else
+    #menuFotos.botonMenu(style='float:left')
+      |Fotos
+
+  if(menu == 'blog')
+    #menuBlog.botonMenuSel(style='float:left')
+      |Blog
+  else
+    #menuBlog.botonMenu(style='float:left')
+      |Blog
+      
+  if(menu == 'mailing')
+    #menuMailing.botonMenuSel(style='float:left')
+      |Mailing
+  else
+    #menuMailing.botonMenu(style='float:left')
+      |Mailing
+      
+  if(role == 'ADMIN')
+    if(menu == 'gastos')
+      #menuGastos.botonMenuSel(style='float:left')
+        |Gastos
+    else
+      #menuGastos.botonMenu(style='float:left')
+        |Gastos
+
+    if(menu == 'agenda')
+      #menuAgenda.botonMenuSel(style='float:left')
+        |Agenda
+    else
+      #menuAgenda.botonMenu(style='float:left')
+        |Agenda
+
+    if(menu == 'admin')
+      #menuAdmin.botonMenuSel(style='float:left')
+        |Admin
+    else
+      #menuAdmin.botonMenu(style='float:left')
+        |Admin
+
+  #menuSalir.botonMenu(style='float:left')
+    |Salir
+    
+  div(style='float:right; margin-top:10px; margin-right:10px')
+    font.usuario #{session.usuario.id}
+    font.role &nbsp;(#{session.usuario.role._id})
+    
+script.
+  $('#menuMisPapas').click(function() {
+    window.location = '/misPapas';    
+  });
+
+  $('#menuFotos').click(function() {
+    window.location = '/albumes';    
+  });
+  
+  $('#menuBlog').click(function() {
+    window.location = '/blog';
+  });
+
+  $('#menuMailing').click(function() {
+    window.location = '/mailing';
+  });
+  
+  $('#menuGastos').click(function() {
+    window.location = '/gastos';
+  });
+
+  $('#menuAgenda').click(function() {
+    window.location = '/agenda';
+  });
+
+  $('#menuAdmin').click(function() {
+    window.location = '/admin';
+  });
+
+  $('#menuSalir').click(function() {
+    if(confirm('¿Seguro que quieres salir?')) {
+      window.location = '/salir';
+    }
+  });

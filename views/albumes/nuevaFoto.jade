@@ -1,0 +1,38 @@
+extends ../layout
+block content
+  h2(style='color:#006699') #{album.titulo}
+  
+  if(warningMessage)
+    .warning.textLeft(style='width:370px; margin-top:20px') #{warningMessage}
+
+  form(action='/albumes/#{album._id}/fotos', method='post', enctype='multipart/form-data')
+    input#idAlbum(type='hidden', name='idAlbum', value='#{album._id}')
+    .esquinasRedondas.azul(style='margin-top:20px; width:350px')
+      h3(style='color:#006699') Publicar foto &aacute;lbum
+      table
+        tr
+          td.nombreCampo Foto
+          td: input#foto(type='file', name='foto', size='40')
+        tr
+          td
+          td
+            input#btSubmit(type='submit', name='btSubmit', value='aceptar')
+            input#btCancelar(type='button', name='btCancelar', value='cancelar', style='margin-left:5px')
+      #infoEspera(style='display:none; margin-top:20px; margin-left:5px; color:#006699') Publicando foto, espera por favor...
+
+  script.
+    $('input[type="button"]').click(function() {
+      window.location = '/albumes';
+    });
+  
+    $('form').submit(function() {
+      if($('#foto').val().length == 0) {
+        alert('Selecciona la foto que quieres publicar');
+        return false;
+      }
+    
+      $('input[type="submit"]').prop('disabled', true);
+      $('input[type="button"]').prop('disabled', true);
+      $('#infoEspera').css('display', 'block');
+      return true;
+    });

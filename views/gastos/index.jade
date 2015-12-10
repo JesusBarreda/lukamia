@@ -1,0 +1,224 @@
+extends ../layout
+block content
+  - var separador = '|';
+
+  div(style='float:left; width:40%')
+    table(style='margin-top:10px')
+      tr
+        td.nombreCampo(width='110') &nbsp;Mes
+        td.nombreCampo(width='60') &nbsp;A&ntilde;o
+      tr
+        td
+          select#mes(name='mes', size='1', onchange='ocultarGastos()')
+            option(value='')          
+            - each m in meses
+              - if(mes && (mes == m.numero))
+                  option(value='#{m.numero}', selected='selected') #{m.nombre}
+              - else
+                  option(value='#{m.numero}') #{m.nombre}
+        td
+          input#anyo(type='text', name='anyo', size='2', maxlength='4', value='#{anyo}', style='text-align:center', onchange='ocultarGastos()')
+        td
+          input#btConsultar(type='button', name='btConsultar', value='consultar')
+        
+    table#gastos(style='margin-top:10px', cellspacing='2', cellpadding='2', width='100%')
+      thead
+        tr
+          th.nombreCampo(width='70%', height='20', align='left', style='padding-left:10px') Concepto
+          th.nombreCampo(width='30%', height='20', colspan='2', align='center') Coste
+      - if(gastos.length != 0)
+          - var colorFondo = '#FFFFFF';
+          - var total = 0.0;
+          tbody
+            - each gasto in gastos
+                - total += gasto.coste;
+                tr(bgcolor='#{colorFondo}')
+                  td(style='padding-left:10px') #{gasto.concepto}
+                  td(align='center')
+                    input(type='hidden', id='coste_#{gasto._id}_actual', name='coste_#{gasto._id}_actual', value='#{gasto.coste}')
+                    - if(mes)
+                        input(type='text', id='coste_#{gasto._id}', name='coste_#{gasto._id}', size='8', style='text-align:right', value='#{gasto.coste.toFixed(2)}', onchange='modificar("#{gasto._id}")')
+                    - else
+                        input(type='text', id='coste_#{gasto._id}', name='coste_#{gasto._id}', size='8', style='text-align:right', value='#{gasto.coste.toFixed(2)}', readonly='readonly')
+                    |&euro;
+                  - if(mes)
+                      td(align='center', width='20'): img(src='/images/del.gif', style='vertical-align:middle; cursor:pointer', title='Eliminar gasto', onclick='eliminar("#{gasto._id}")')
+                - if(colorFondo == '#FFFFFF')
+                    - colorFondo = '#EEEEEE';
+                - else
+                    - colorFondo = '#FFFFFF';
+            tr(bgcolor='#F5ECCE')
+              td(style='padding-left:10px; font-weight:bold') TOTAL            
+              td(align='center')
+                input#total(type='text', name='total', readonly='readonly', size='8', style='text-align:right; color:#FF0000', value='#{total.toFixed(2)}')
+                |&euro;
+              - if(mes)
+                  td(width='20')
+
+  - if(mes)
+      #divNuevoConcepto(style='float:left; margin-top:50px; width:35%')
+        form#formConcepto(name='formConcepto')
+          input#_method(type='hidden', name='_method')
+          input#idGasto(type='hidden', name='idGasto')
+          div(style='width:350px; height:50px')
+            table(align='right')
+              tr
+                td.nombreCampo Concepto
+                td.nombreCampo Coste (&euro;)
+              tr
+                td: input#concepto(type='text', name='concepto', size='30', onkeyup='obtenerConceptos(event)')
+                td: input#coste(type='text', name='coste', size='5', style='text-align:right', onkeypress='validarIntro(event)')
+                td: img(src='/images/add.gif', style='vertical-align:middle; cursor:pointer', title='A&ntilde;adir concepto', onclick='addConcepto()')    
+          #conceptosCoincidentes(style='margin-left:75px; display:none')
+
+  div(style='float:right; margin-right:10px; margin-top:30px')
+    .separadorEnlaces(style='float:left') #{separador}&nbsp;
+    div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='/gastos/historico/#{fechaDesdeHistorico}/#{fechaHastaHistorico}/barras') Hist&oacute;rico
+    .separadorEnlaces(style='float:left') &nbsp;#{separador}
+
+  script.
+    var total = new Number('#{total}');
+  
+    function addConcepto() {
+      if($('#concepto').val() == '') {
+        alert('Debes indicar un concepto');
+        $('#concepto').focus();
+        return;
+      }
+    
+      if($('#coste').val() == '') {
+        alert('Debes indicar el coste');
+        $('#coste').focus();
+        return;
+      }
+    
+      var coste = new Number($('#coste').val());    
+      if(new String(coste) == 'NaN') {
+        alert('El formato del coste no es numérico');
+        $('#coste').focus();
+        return;
+      }
+      
+      $("#formConcepto").attr('action', '/gastos/#{mes}-#{anyo}');
+      $("#formConcepto").attr('method', 'post');
+      $('#_method').val('post');
+      $('#formConcepto').submit();
+    }
+  
+    function validarIntro(event) {
+      var tecla = (document.all) ? event.keyCode : event.which;
+      if (tecla == 13) {
+        addConcepto();
+      }
+    }
+
+    function obtenerConceptos(event) {
+      var tecla = (document.all) ? event.keyCode : event.which;
+      if(tecla == 27) {
+        $('#conceptosCoincidentes').hide();
+        $('#conceptosCoincidentes').html('');
+        $('#concepto').val('');
+      }
+      else if($('#concepto').val() != '') {
+        $('#conceptosCoincidentes').html('<font color="#006699">Cargando conceptos...</font>');
+        $('#conceptosCoincidentes').show();
+        var criterio = $('#concepto').val();
+        $.getJSON('/gastos/conceptos/' + criterio, function(datos) {
+          var conceptos = datos;      
+          var html = '<table bgcolor="#FFFFFF" width="100%">';
+          var colorFondo = '#DBE4ED';
+          $.each(conceptos, function(indice, concepto) {
+            html += '<tr bgcolor="' + colorFondo + '"><td height="20" style="padding-left:5px"><a href="javascript:selConcepto(\'' + concepto + '\')" class="enlace">' + concepto + '</a></td></tr>';
+            if(colorFondo == '#DBE4ED') {
+              colorFondo = '#BFCCD9';
+            }
+            else {
+              colorFondo = '#DBE4ED';
+            }
+          });
+          html += '</table>';
+          $('#conceptosCoincidentes').html(html);
+        });
+      }
+      else {
+        $('#conceptosCoincidentes').hide();
+      }
+    }
+  
+    function selConcepto(concepto) {
+      $('#conceptosCoincidentes').hide();
+      $('#conceptosCoincidentes').html('');
+      $('#concepto').val(concepto);
+      $('#coste').focus();
+    }
+  
+    function ocultarGastos() {
+      $('#gastos').hide();
+      $('#divNuevoConcepto').hide();
+    }
+  
+    function modificar(idGasto) {
+      if($('#coste_' + idGasto).val() == '') {
+        alert('El coste no puede ser cero');
+        $('#coste_' + idGasto).focus();
+        return;
+      }
+    
+      var coste = new Number($('#coste_' + idGasto).val());    
+      if(new String(coste) == 'NaN') {
+        alert('El formato del coste no es numérico');
+        $('#coste_' + idGasto).focus();
+        return;
+      }
+    
+      $.ajax({
+        type: 'put',
+        url: '/gastos/#{mes}-#{anyo}',
+        data: {idGasto: idGasto, coste: $('#coste_' + idGasto).val()},
+        success: function(data) {
+          var costeActual = new Number($('#coste_' + idGasto + '_actual').val());
+          var costeNuevo = new Number($('#coste_' + idGasto).val());
+          total -= costeActual;
+          total += costeNuevo;
+          $('#coste_' + idGasto + '_actual').val($('#coste_' + idGasto).val());
+          $('#coste_' + idGasto).val(costeNuevo.toFixed(2));
+          $('#total').val(total.toFixed(2));
+        }
+      });
+    }
+  
+    function eliminar(idGasto) {
+      if(confirm('¿Estás seguro de querer eliminar el gasto?')) {
+        $("#formConcepto").attr('action', '/gastos/#{mes}-#{anyo}');
+        $("#formConcepto").attr('method', 'post');
+        $('#_method').val('delete');
+        $('#idGasto').val(idGasto);
+        $('#formConcepto').submit();
+      }
+    }
+
+    $(function() {
+      $('#btConsultar').click(function() {
+        if(jQuery.trim($('#anyo').val()) == '') {
+          alert('Debes indicar el año');
+          $('#anyo').focus();
+          return;
+        }
+      
+        var anyo = new Number($('#anyo').val());
+        if(new String(anyo) == 'NaN') {
+          alert('El año no es correcto');
+          $('#anyo').focus();
+          return;
+        }
+      
+        $('#btConsultar').prop('disabled', true);
+      
+        if($('#mes').val() == '') {
+          window.location = '/gastos/' + $('#anyo').val();
+        }
+        else {
+          window.location = '/gastos/' + $('#mes').val() + '-' + $('#anyo').val();
+        }
+      });
+    });

@@ -1,0 +1,29 @@
+extends layout
+block content
+  .info.textLeft(style='width:400px; margin-left:auto; margin-right:auto; margin-top:30px')
+    |Por favor, identificate para poder interactuar con las publicaciones
+  
+  form(action='/identificacion', method='post')
+    .autentificacion
+      div &iquest;Qui&eacute;n eres?
+      div: input#idUsuario(type='text', name='idUsuario', placeholder='¿quién eres?', maxlength='20')
+      div: input#btSubmit(type='submit', name='btSubmit', value='aceptar')
+      
+  script.
+    $('#idUsuario').click(function() {
+      this.placeholder='';    
+    });
+  
+    $('form').submit(function() {
+      if($('#idUsuario').val().length==0) {
+        alert('Indentificate');
+        return false;
+      }
+
+      $('input[type="submit"]').attr('disabled','disabled');
+      return true;
+    });
+    
+    $(function() {
+      $('#idUsuario').focus();
+    });

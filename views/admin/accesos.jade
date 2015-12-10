@@ -1,0 +1,29 @@
+extends ../layout
+block content
+  - var separador = '|';
+  
+  div(style='margin-top:15px')
+    .separadorEnlaces(style='float:left') #{separador}&nbsp;
+    div(style='float:left; height:12px; margin-top:2px'): a#eliminarAccesos.enlace(href='#') Eliminar accesos
+    .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+  br
+  table.accesos(cellspacing='1', cellpadding='3')
+    thead
+      tr
+        th Usuario
+        th Fecha login
+    tbody
+      - each acceso,i in accesos
+          tr(class=(i % 2 == 0) ? 'filaPar' : 'filaImpar')
+            td(width='65%', align='center') #{acceso.usuario}
+            td(width='35%', align='center') #{fechaHora.fechaToString(acceso.fechaLogin,'DD/MM/YYYY HH:mm')}
+            
+  script.
+    $(function() {
+      $('#eliminarAccesos').click(function() {
+        var msg = '¿Estás seguro de querer eliminar el registro de accesos?';
+        if(confirm(msg)) {
+          window.location = '/admin/accesos/eliminar';
+        }
+      });
+    });

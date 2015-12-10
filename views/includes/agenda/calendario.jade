@@ -1,0 +1,102 @@
+- var fechaActual = fechaHora.getFecha();
+
+link(type='text/css', rel='stylesheet', href='/stylesheets/calendario.css')
+
+.calendario(style='width:90%')
+  table(width='100%', border='0', cellspacing='2', cellpadding='2')
+    thead
+      tr(style='height:25px')
+        th.calMesAnyo(align='center', colspan='7')
+          span: img(src='/images/anterior.gif', style='cursor:pointer; vertical-align:middle', onclick='irMesAnterior()')
+          span(style='margin-left:25px; margin-right:25px'): |#{calendario.mes}
+          span: img(src='/images/siguiente.gif', style='cursor:pointer; vertical-align:middle', onclick='irMesSiguiente()')
+      tr(style='height:25px')
+        th.calDiaSemana(align='center') L
+        th.calDiaSemana(align='center') M
+        th.calDiaSemana(align='center') X
+        th.calDiaSemana(align='center') J
+        th.calDiaSemana(align='center') V
+        th.calDiaSemana(align='center') S
+        th.calDiaSemana(align='center') D
+    tbody
+      - var diaUno = 0;
+      - each semana in calendario.calendario
+        tr(style='height:25px')
+          - each dia in semana
+              - var diaStr = fechaHora.fechaToString(dia.fecha, 'DD-MM-YYYY');
+              - if(dia.fecha.getDate() == 1)
+                  - diaUno++;
+              - if(diaUno == 1)
+                  - if(dia.fecha.getDay() == 6)
+                      - if(fechaHora.comparar(dia.fecha, '=', fechaActual))
+                          - if(dia.eventos)
+                              td.calDiaSabado.calDiaActual.diaConInfo(align='center', onclick='irFecha("#{diaStr}")', onmouseover='mostrarNumEventos("#{dia.eventos}")', onmousemove='mostrarNumEventos("#{dia.eventos}")', onmouseout='ocultarNumEventos()') #{dia.fecha.getDate()}
+                          - else
+                              td.calDiaSabado.calDiaActual.diaSinInfo(align='center', onclick='irFecha("#{diaStr}")') #{dia.fecha.getDate()}
+                      - else
+                          - if(dia.eventos)
+                              td.calDiaSabado.diaConInfo(align='center', , onclick='irFecha("#{diaStr}")', onmouseover='mostrarNumEventos("#{dia.eventos}")', onmousemove='mostrarNumEventos("#{dia.eventos}")', onmouseout='ocultarNumEventos()') #{dia.fecha.getDate()}
+                          - else
+                              td.calDiaSabado.diaSinInfo(align='center', onclick='irFecha("#{diaStr}")') #{dia.fecha.getDate()}
+                  - else if(dia.fecha.getDay() == 0)
+                      - if(fechaHora.comparar(dia.fecha, '=', fechaActual))
+                          - if(dia.eventos)
+                              td.calDiaDomingo.calDiaActual.diaConInfo(align='center', onclick='irFecha("#{diaStr}")', onmouseover='mostrarNumEventos("#{dia.eventos}")', onmousemove='mostrarNumEventos("#{dia.eventos}")', onmouseout='ocultarNumEventos()') #{dia.fecha.getDate()}
+                          - else
+                              td.calDiaDomingo.calDiaActual.diaSinInfo(align='center', onclick='irFecha("#{diaStr}")') #{dia.fecha.getDate()}
+                      - else
+                          - if(dia.eventos)
+                              td.calDiaDomingo.diaConInfo(align='center', onclick='irFecha("#{diaStr}")', onmouseover='mostrarNumEventos("#{dia.eventos}")', onmousemove='mostrarNumEventos("#{dia.eventos}")', onmouseout='ocultarNumEventos()') #{dia.fecha.getDate()}
+                          - else
+                              td.calDiaDomingo.diaSinInfo(align='center', onclick='irFecha("#{diaStr}")') #{dia.fecha.getDate()}
+                  - else if(fechaHora.comparar(dia.fecha, '=', fechaActual))
+                      - if(dia.eventos)
+                          td.calDiaActual.diaConInfo(align='center', onclick='irFecha("#{diaStr}")', onmouseover='mostrarNumEventos("#{dia.eventos}")', onmousemove='mostrarNumEventos("#{dia.eventos}")', onmouseout='ocultarNumEventos()') #{dia.fecha.getDate()}
+                      - else
+                          td.calDiaActual.diaSinInfo(align='center', onclick='irFecha("#{diaStr}")') #{dia.fecha.getDate()}
+                  - else
+                      - if(dia.eventos)
+                          td.diaConInfo(align='center', onclick='irFecha("#{diaStr}")', onmouseover='mostrarNumEventos("#{dia.eventos}")', onmousemove='mostrarNumEventos("#{dia.eventos}")', onmouseout='ocultarNumEventos()') #{dia.fecha.getDate()}
+                      - else
+                          td.diaSinInfo(align='center', onclick='irFecha("#{diaStr}")') #{dia.fecha.getDate()}
+              - else
+                  - if(dia.eventos)
+                      td.calDiaFueraMes.diaConInfo(align='center', onclick='irFecha("#{diaStr}")', onmouseover='mostrarNumEventos("#{dia.eventos}")', onmousemove='mostrarNumEventos("#{dia.eventos}")', onmouseout='ocultarNumEventos()') #{dia.fecha.getDate()}
+                  - else
+                      td.calDiaFueraMes.diaSinInfo(align='center', onclick='irFecha("#{diaStr}")') #{dia.fecha.getDate()}
+
+#infoEventos.esquinasRedondas.marron(style='display:none; position:absolute; width:auto; text-align:center; padding:7px')
+
+script.
+  function irFecha(fecha) {
+    window.location = '/agenda/' + fecha;
+  }
+  
+  function irMesAnterior() {
+    window.location = '/agenda/#{mesAnterior}';
+  }
+  
+  function irMesSiguiente() {
+    window.location = '/agenda/#{mesSiguiente}';
+  }
+  
+  function mostrarNumEventos(numEventos) {
+    if(numEventos) {
+      var txtEventos = ' eventos';
+      var x = event.clientX;
+      var y = event.clientY;
+      
+      if(numEventos == 1) {
+        txtEventos = ' evento';
+      }
+      
+      $('#infoEventos').css('left', x + 10);
+      $('#infoEventos').css('top', y + 10);
+      $('#infoEventos').html('<b>' + numEventos + '</b>' + txtEventos);
+      $('#infoEventos').show();
+    }
+  }
+  
+  function ocultarNumEventos() {
+    $('#infoEventos').hide();
+  }

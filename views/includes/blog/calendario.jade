@@ -1,0 +1,78 @@
+- var mes = calendario[0];
+
+link(type='text/css', rel='stylesheet', href='/stylesheets/calendario.css')
+
+.calendario(style='width:90%')
+  table(width='100%', border='0', cellspacing='2', cellpadding='2')
+    thead
+      tr
+        th.calMesAnyo(align='center', colspan='7')
+          span: img(src='/images/anterior.gif', style='cursor:pointer; vertical-align:middle', onclick='irMesAnterior()')
+          span(style='margin-left:25px; margin-right:25px'): |#{mes.mes}
+          span: img(src='/images/siguiente.gif', style='cursor:pointer; vertical-align:middle', onclick='irMesSiguiente()')
+      tr
+        th.calDiaSemana(align='center') L
+        th.calDiaSemana(align='center') M
+        th.calDiaSemana(align='center') X
+        th.calDiaSemana(align='center') J
+        th.calDiaSemana(align='center') V
+        th.calDiaSemana(align='center') S
+        th.calDiaSemana(align='center') D
+    tbody
+      - var diaUno = 0;
+      - each semana in mes.calendario
+        tr
+          - each dia in semana
+              - if(dia.fecha.getDate() == 1)
+                  - diaUno++;
+              - if(diaUno == 1)
+                  - if(dia.fecha.getDay() == 6)
+                      - if(dia.fechaActual)
+                          - if(dia.destacar)
+                              td.calDiaSabado.calDiaActual.diaConInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                          - else
+                              td.calDiaSabado.calDiaActual.diaSinInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                      - else
+                          - if(dia.destacar)
+                              td.calDiaSabado.diaConInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                          - else
+                              td.calDiaSabado.diaSinInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                  - else if(dia.fecha.getDay() == 0)
+                      - if(dia.fechaActual)
+                          - if(dia.destacar)
+                              td.calDiaDomingo.calDiaActual.diaConInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                          - else
+                              td.calDiaDomingo.calDiaActual.diaSinInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                      - else
+                          - if(dia.destacar)
+                              td.calDiaDomingo.diaConInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                          - else
+                              td.calDiaDomingo.diaSinInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                  - else if(dia.fechaActual)
+                      - if(dia.destacar)
+                          td.calDiaActual.diaConInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                      - else
+                          td.calDiaActual.diaSinInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                  - else
+                      - if(dia.destacar)
+                          td.diaConInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                      - else
+                          td.diaSinInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+              - else
+                  - if(dia.destacar)
+                      td.calDiaFueraMes.diaConInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                  - else
+                      td.calDiaFueraMes.diaSinInfo(align='center', onclick='#{dia.enlace}') #{dia.fecha.getDate()}
+                      
+script.
+  function irFecha(fecha) {
+    window.location = '/blog/' + fecha;
+  }
+  
+  function irMesAnterior() {
+    window.location = '/blog/#{mesAnterior}';
+  }
+  
+  function irMesSiguiente() {
+    window.location = '/blog/#{mesSiguiente}';
+  }

@@ -1,0 +1,348 @@
+extends ../layout
+block append head
+  script(type='text/javascript', src='/javascripts/jquery.form.js')
+  script(type='text/javascript', src='/javascripts/moment.min.js')
+  script(type='text/javascript', src='/javascripts/es.js')  
+  script(type='text/javascript', src='/javascripts/funciones.js')
+block content
+  - var role = session.usuario.role._id;
+  - var separador = '|';
+  
+  h2(style='color:#006699') #{album.titulo}
+
+  #contenedorSinFotos(style='display:none')
+    div(style='width:53%; height:25px')
+      .separadorEnlaces(style='float:right') &nbsp;#{separador}
+      div(style='float:right; padding-top:2px'): a.enlace(href='/albumes') &Aacute;lbumes
+      .separadorEnlaces(style='float:right') #{separador}&nbsp;
+    .fotoAlbum(style='width:50%; height:200px; background-color:#EEEEEE; color:#777777; text-align:center; padding-top:150px')
+      |No hay fotos publicadas en el &aacute;lbum
+  
+  #contenedorConFotos(style='display:none; width:100%')
+    div(style='float:left; width:55%')
+      div(style='height:30px; width:100%')
+        div(style='float:left; width:200px')
+          if(role == 'ADMIN')
+            input#fotoPortada(type='checkbox', name='fotoPortada')
+            |&nbsp;Foto portada
+          else
+            |&nbsp;
+        div(style='float:left')
+          img#fotoAnterior(src='/images/anterior.gif', style='vertical-align:middle; cursor:pointer', onclick='obtenerFotoAnterior()')
+          input#btShow(type='button', name='btShow', value='start show', style='margin-left:10px; margin-right:10px')
+          img#fotoSiguiente(src='/images/siguiente.gif', style='vertical-align:middle; cursor:pointer', onclick='obtenerFotoSiguiente()')
+        div(style='float:right')
+          .separadorEnlaces(style='float:left') #{separador}&nbsp;
+          div(style='float:left; padding-top:2px'): a.enlace(href='/albumes') &Aacute;lbumes
+          .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+          if(role == 'ADMIN')
+            div(style='float:left; padding-top:2px'): a.enlace(href='javascript:mostrarFormUpload()') Cambiar foto
+            .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+            div(style='float:left; padding-top:2px'): a.enlace(href='javascript:eliminarFoto()') Eliminar foto
+            .separadorEnlaces(style='float:left') &nbsp;#{separador}
+      .fotoAlbum(style='width:100%')
+        img#fotoAlbum(width='100%')
+        #esperaCargaFoto(style='display:none; width:100%; height:250px; background-color:#DDDDDD; text-align:center; padding-top:150px; font-size:16px; color:#777777') Cargando foto...
+    
+    div(style='float:right; width:40%')
+      #formComentario(style='text-align:center')
+        div(style='text-align:center') &iquest;Alg&uacute;n comentario?
+        div(style='text-align:center')
+          textarea#comentario(name='comentario', cols='60', rows='3', maxlength='200', style='resize:none; margin-top:5px')
+        div(style='text-align:center')
+          input#btAceptarComentario(type='button', name='btAceptarComentario', value='aceptar', style='margin-top:5px')
+      #comentarios(style='margin-top:10px; margin-left:auto; margin-right:auto; width:80%')      
+
+  #divUploadFoto(style='float:left; display:none')
+    .warning.textLeft(style='width:370px; margin-bottom:15px; display:none')
+    form#formUploadFoto(name='formUploadFoto', method='put', enctype='multipart/form-data')
+      .esquinasRedondas.azul(style='width:350px')
+        h3(style='color:#006699') Sustituir foto &aacute;lbum
+        table
+          tr
+            td.nombreCampo Foto sustituci&oacute;n
+          tr
+            td: input#fotoSustitucion(type='file', name='fotoSustitucion', size='40')
+          tr
+            td
+              input#btAceptarUpload(type='button', name='btAceptarUpload', value='aceptar')
+              input#btCancelarUpload(type='button', name='btCancelarUpload', value='cancelar', style='margin-left:5px')
+        #infoEsperaUpload(style='display:none; margin-top:20px; margin-left:5px; color:#006699') Sustituyendo foto, espera por favor...
+    
+  script.
+    var role = '#{session.usuario.role._id}';
+    var idAlbum = '#{album._id}';
+    var fotos = !{fotos};
+    var fotoPortada = '#{album.fotoPortada}'.split('.')[0];
+    var indiceFotoMostrada = 0;
+    var idTimeoutShow = null;
+    var showInterval = null;
+        
+    function obtenerIndiceAnterior() {
+      var indiceAnterior = indiceFotoMostrada - 1;
+      if(indiceAnterior == -1) {
+        indiceAnterior = (fotos.length - 1);
+      }
+      return indiceAnterior;
+    }
+  
+    function obtenerIndiceSiguiente() {
+      var indiceSiguiente = indiceFotoMostrada + 1;
+      if(indiceSiguiente == fotos.length ) {
+        indiceSiguiente = 0;
+      }
+      return indiceSiguiente;
+    }
+        
+    function obtenerFotoAnterior() {
+      indiceFotoMostrada = obtenerIndiceAnterior();
+      obtenerFoto(fotos[indiceFotoMostrada]);
+    }
+
+    function obtenerFotoSiguiente() {
+      indiceFotoMostrada = obtenerIndiceSiguiente();
+      obtenerFoto(fotos[indiceFotoMostrada]);
+    }
+    
+    function obtenerFoto(foto) {
+      $('#fotoAlbum').hide();
+      $('#comentarios').html('');
+      $('#esperaCargaFoto').show();
+      $.getJSON('/albumes/' + idAlbum + '/fotos/' + foto._id + '.' + foto.extension, function(datos) {
+        fotos[indiceFotoMostrada].comentarios = datos.foto.comentarios;
+        $('#fotoAlbum').attr('src', '/temp/' + foto._id + '.' + foto.extension);
+        $('#esperaCargaFoto').hide();
+        $('#fotoAlbum').show();
+        $('#fotoPortada').prop('checked', foto._id == fotoPortada);
+        $.each(fotos[indiceFotoMostrada].comentarios, function() {
+          generarComentario(this, false);
+        });
+        
+        if(idTimeoutShow != null) {
+          idTimeoutShow = setTimeout(function() {
+            obtenerFotoSiguiente();
+          }, showInterval);
+        }
+      });      
+    }
+    
+    function startScheduleShow() {
+      $('#fotoAnterior').hide();
+      $('#fotoSiguiente').hide();
+      idTimeoutShow = setTimeout(function() {
+        obtenerFotoSiguiente();
+      }, showInterval);
+    }
+  
+    function stopScheduleShow() {
+      clearTimeout(idTimeoutShow);
+      idTimeoutShow = null;
+      $('#fotoAnterior').show();
+      $('#fotoSiguiente').show();
+    }
+    
+    function mostrarFormUpload() {
+      $('#contenedorConFotos').hide();
+      $('#divUploadFoto').show();
+    }
+    
+    function eliminarFoto() {
+      var msg = '¿Estás seguro de querer eliminar la foto?\r\n(se eliminarán también sus comentarios)';
+      if(confirm(msg)) {
+        var idFoto = fotos[indiceFotoMostrada]._id;
+        var extension = fotos[indiceFotoMostrada].extension;
+        $.ajax({
+          type: 'delete',
+          url: '/albumes/' + idAlbum + '/fotos/' + idFoto + '.' + extension,
+          success: function(data) {
+            fotos.splice(indiceFotoMostrada, 1);
+            if(fotos.length != 0) {
+              if(indiceFotoMostrada == fotos.length) {
+                indiceFotoMostrada--;
+              }
+              obtenerFoto(fotos[indiceFotoMostrada]);
+            }
+            else {
+              $('#contenedorConFotos').hide();
+              $('#contenedorSinFotos').show();
+            }
+          }
+        });
+      }
+    }
+    
+    function generarComentario(comentario, fade) {
+      var html = '<div id="comentario_' + comentario._id + '" class="esquinasRedondas marron" style="margin-top:15px; margin-bottom:15px">' +
+                 '  <div style="float:left">' +
+                 '    <font style="color:brown; font-style:italic">'+comentario.usuario+'</font>' +
+                 '    <font style="color:#777777; font-style:italic"> (' + moment(comentario.fechaPublicacion).fromNow() + ')</font>' +
+                 '  </div>';
+    
+      if(role == 'ADMIN') {
+        html += '  <div style="float:right">' +             
+                '    <img src="/images/trash.png" width="16" onclick="eliminarComentario(\'' + comentario._id + '\')" style="cursor:pointer" title="Eliminar comentario"/>' +
+                '  </div>';
+      }
+    
+      html += '  <div style="clear:both; width:100%; height:1px; background-color:#F7D358; margin-top:20px; margin-bottom:5px"></div>' +
+                 comentario.texto +
+              '</div>';
+      
+      if(fade) {
+        $(html).hide().prependTo($('#comentarios')).fadeIn();
+      }
+      else {
+        $(html).prependTo($('#comentarios'));
+      }
+    }
+    
+    function publicarComentario() {
+      var comentario = nl2br($('#comentario').val());
+      $('#comentario').val('');
+      if(comentario == '') {
+        alert('Debes escribir el comentario');
+        $('#comentario').focus();        
+      }
+      else {
+        var idFoto = fotos[indiceFotoMostrada]._id;
+        $('#btAceptarComentario').prop('disabled', true);
+        $('#comentario').prop('disabled', true);
+        $.ajax({
+          type: 'post',
+          url: '/albumes/' + idAlbum + '/fotos/' + idFoto + '/comentarios',
+          data: {comentario: comentario},
+          success: function(data) {
+            obtenerComentarios(idFoto);
+            $('#btAceptarComentario').removeAttr('disabled');
+            $('#comentario').removeAttr('disabled');
+          }
+        });
+      }
+    }
+    
+    function obtenerComentarios(idFoto) {
+      $.getJSON('/albumes/' + idAlbum + '/fotos/' + idFoto + '/comentarios', function(datos) {
+        fotos[indiceFotoMostrada].comentarios = datos.comentarios;
+        $('#comentarios').html(''); 
+        $.each(fotos[indiceFotoMostrada].comentarios, function(indice, comentario) {
+          generarComentario(comentario, indice == fotos[indiceFotoMostrada].comentarios.length - 1);
+        });
+      });
+    }
+    
+    function eliminarComentario(idComentario) {
+      var msg = '¿Estás seguro de querer eliminar el comentario?';
+      if(confirm(msg)) {
+        var idFoto = fotos[indiceFotoMostrada]._id;
+        $.ajax({
+          type: 'delete',
+          url: '/albumes/' + idAlbum + '/fotos/' + idFoto + '/comentarios/' + idComentario,
+          success: function(data) {
+            $('#comentario_' + idComentario).remove();
+          }
+        });
+      }
+    }
+                    
+    $(function() {
+      if(fotos.length == 0) {
+        $('#contenedorSinFotos').show();
+      }
+      else {
+        $('#contenedorConFotos').show();
+        $('#fotoAlbum').attr('src', '/temp/' + fotos[indiceFotoMostrada]._id + '.' + fotos[indiceFotoMostrada].extension);
+        if(fotos[indiceFotoMostrada]._id == fotoPortada) {
+          $('#fotoPortada').prop('checked', true);
+        }
+        $.each(fotos[indiceFotoMostrada].comentarios, function() {
+          generarComentario(this, false);
+        });
+      }
+      
+      $('#fotoPortada').click(function() {
+        var accion = null;
+        var idFoto = fotos[indiceFotoMostrada]._id;
+        var extension = fotos[indiceFotoMostrada].extension; 
+        if(this.checked) {
+          accion = 'fijarFotoPortada';        
+        }
+        else {
+          accion = 'eliminarFotoPortada';        
+        }
+        $.ajax({
+          type: 'put',
+          url: '/albumes/' + idAlbum + '/fotos/portada/' + idFoto + '.' + extension,
+          data: {accion: accion},
+          success: function(data) {
+            if(accion == 'fijarFotoPortada') {
+              fotoPortada = idFoto;
+            }
+            else {
+              fotoPortada = null;
+            }
+          }
+        });
+      });
+      
+      $('#btShow').click(function() {
+        if($('#btShow').val() == 'start show') {
+          showInterval = prompt('Introduce los segundos que quieres como intervalo entre fotos');
+          showInterval *= 1000;
+          if(showInterval) {
+            if(esNumero(showInterval)) {
+              $('#btShow').val('stop show');
+              startScheduleShow();
+            }
+          }
+        }
+        else {
+          $('#btShow').val('start show');
+          stopScheduleShow();
+        }
+      });
+      
+      $('#btCancelarUpload').click(function() {
+        $('#divUploadFoto').hide();
+        $('#contenedorConFotos').show();
+      });
+      
+      $('#btAceptarUpload').click(function() {
+        if($('#fotoSustitucion').val().length == 0) {
+          alert('Selecciona la foto con la que quieres sustituir la publicada');
+          return;
+        }
+        var idFoto = fotos[indiceFotoMostrada]._id;
+        $('#btAceptarUpload').prop('disabled', true);
+        $('#btCancelarUpload').prop('disabled', true);
+        $('#formUploadFoto').attr('action', '/albumes/' + idAlbum + '/fotos/' + idFoto +'/sustituir');
+        $('#formUploadFoto').submit();
+      });
+      
+      $('#formUploadFoto').ajaxForm({
+        beforeSubmit: function() {
+          $('#infoEsperaUpload').show();
+        },
+        success: function(data) {
+          $('#infoEsperaUpload').hide();
+          $('#btAceptarUpload').removeAttr('disabled');
+          $('#btCancelarUpload').removeAttr('disabled');            
+          if(data.upload) {
+            $('#divUploadFoto').hide();
+            $('#contenedorConFotos').show();            
+            obtenerFoto(fotos[indiceFotoMostrada]);
+          }
+          else {
+            $('.warning').html(data.msgWarning);
+            $('.warning').show();
+            setTimeout(function() {
+              $('.warning').fadeOut(1000);
+            }, 3000);
+          }
+        }
+      });
+      
+      $('#btAceptarComentario').click(function() {
+        publicarComentario();
+      });
+    });
+    

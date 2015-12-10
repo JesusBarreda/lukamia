@@ -1,0 +1,296 @@
+extends ../layout
+block append head
+  script(type='text/javascript', src='/javascripts/moment.min.js')
+  script(type='text/javascript', src='/javascripts/es.js')
+  script(type='text/javascript', src='/javascripts/funciones.js')
+block content
+  - var role = session.usuario.role._id;
+  - var separador = '|';
+
+  div(style='float:left; margin-top:20px; width:70%')
+    .fechaBlog #{fechaHora.fechaToString(fechaBlog, 'dddd, DD \\d\\e MMMM \\d\\e YYYY')}
+    .enlacesBlog
+      if(role == 'ADMIN')
+        if(publicacion && publicacion.titulo)
+          .separadorEnlaces(style='float:left') #{separador}&nbsp;
+          div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='javascript:modoEdicionTexto()') Modificar texto
+          .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+          div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='javascript:eliminarTexto()') Eliminar texto
+          .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+        else
+          .separadorEnlaces(style='float:left') #{separador}&nbsp;
+          div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='javascript:modoEdicionTexto()') Publicar texto
+          .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+        if(publicacion && publicacion.img.data)
+          div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='javascript:modoEdicionFoto()') Modificar foto
+          .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+          div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='javascript:eliminarFoto()') Eliminar foto
+          .separadorEnlaces(style='float:left') &nbsp;#{separador}
+        else
+          div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='javascript:modoEdicionFoto()') Publicar foto
+          .separadorEnlaces(style='float:left') &nbsp;#{separador}&nbsp;
+        
+    if(!publicacion || (!publicacion.titulo && !publicacion.img.data))
+      #textoFijoBlog(style='clear:both; margin-top:20px; width:100%')
+        div(style='height:1px; width:95%; background-color:#CCCCCC')
+        p(style='color:#888888') No hay nada publicado en esta fecha
+      
+    if(publicacion && publicacion.titulo)
+      #textoFijoBlog.textoFijoBlog
+        .tituloPublicacionBlog #{publicacion.titulo}
+        if(publicacion.texto)
+          div(style='clear:both; height:1px; background-color:#BBBBBB; margin-top:10px; margin-bottom:5px; margin-left:10px; margin-right:10px')
+          #textoPublicado(style='margin-top:10px; margin-left:10px; padding-bottom:10px; color:#666666; width:97%')
+        else
+          div(style='margin-top:10px; width:97%')
+    
+    #textoEditable(style='clear:both; display:none')
+      div(style='height:1px; width:95%; background-color:#CCCCCC')
+      form#formPublicacionTexto(name='formPublicacionTexto', action="/blog/#{fechaHora.fechaToString(fechaBlog, 'DD-MM-YYYY')}/texto", method='post', onsubmit='return comprobarPublicacionTexto()')
+        table(style='margin-top:10px')
+          tr
+            td.nombreCampo T&iacute;tulo
+          tr
+            td
+              - var titulo = '';
+              - if(publicacion && publicacion.titulo)
+                  - titulo = publicacion.titulo;
+              input#titulo(type='text', name='titulo', size='60', value='#{titulo}')
+              img(src='/images/info.png', style='margin-left:10px; vertical-align:middle', onmouseover='showInfoBBCode()', onmouseout='hideInfoBBCode()')
+          tr
+            td(height='5')
+          tr
+            td.nombreCampo Texto
+          tr
+            td
+              textarea#texto(name='texto', cols='125', rows='15', style='resize:none')
+                if(publicacion && publicacion.texto)
+                  |#{publicacion.texto}
+          tr
+            td
+              input#btPublicarTexto(type='button', name='btPublicarTexto', value='publicar')
+              input#btCancelarTexto(type='button', name='btCancelarTexto', value='cancelar', style='margin-left:5px')
+            
+    if(warningMessage)
+      .warning.textLeft(style='width:370px; margin-top:20px') #{warningMessage}
+      
+    if(publicacion && publicacion.img.data)
+      #contenedorFoto
+        if(!publicacion.titulo)
+          div(style='clear:both; height:1px; width:95%; background-color:#CCCCCC')
+        .fotoBlog
+          img(src='/temp/blog_' + fechaHora.fechaToString(fechaBlog, 'DDMMYYYY') + '.' + publicacion.extension, width='100%')
+
+    #publicacionFoto(style='clear:both; display:none')
+      div(style='height:1px; width:95%; background-color:#CCCCCC')
+      form#formPublicacionFoto(name='formPublicacionFoto', action="/blog/#{fechaHora.fechaToString(fechaBlog, 'DD-MM-YYYY')}/foto", method='post', enctype='multipart/form-data')
+        .esquinasRedondas.azul(style='margin-top:20px; width:350px')
+          h2(style='color:#006699') Publicar foto blog
+          table
+            tr
+              td.nombreCampo Foto
+              td: input#foto(type='file', name='foto', size='40')
+            tr
+              td
+              td
+                input#btPublicarFoto(type='button', name='btPublicarFoto', value='publicar')
+                input#btCancelarFoto(type='button', name='btCancelarFoto', value='cancelar', style='margin-left:5px')
+          #infoEspera(style='display:none; margin-top:20px; color:#006699') Publicando foto, espera por favor...
+        
+  div(style='width:30%; float:right; margin-top:20px')
+    .infoPublicacionesBlog
+      table(border='0')
+        tr
+          td(width='20', height='15', bgcolor='#EEEEEE')
+          td &nbsp;Los d&iacute;as sombreados contienen publicaci&oacute;n        
+    include ../includes/blog/calendario
+
+    if(publicacion)
+      #contenedorComentarios(style='padding-top:10px; width:95%')
+        #formComentario(style='margin-top:10px; text-align:center')
+          div(style='text-align:center') &iquest;Alg&uacute;n comentario?
+          div(style='text-align:center')
+            textarea#comentario(cols='60', rows='3', name='comentario', maxlength='200', style='margin-top:5px; resize:none')
+          div(style='text-align:center')
+            input#btPublicarComentario(type='button', name='btPublicarComentario', value='aceptar', style='margin-top:5px')
+        #comentarios(style='width:100%; margin-top:10px')
+          each comentario in publicacion.comentarios
+            div(id='comentario_' + comentario._id, class='esquinasRedondas marron', style='margin-top:15px; margin-bottom:15px')
+              div(style='float:left')
+                font(style='color:brown; font-style:italic') #{comentario.usuario}
+                font(style='color:#777777; font-style:italic') &nbsp;(#{fechaHora.formatFromNow(comentario.fechaPublicacion)})              
+              if(role == 'ADMIN')
+                div(style='float:right')
+                  img(src='/images/trash.png', width='16', onclick='eliminarComentario(\'#{comentario._id}\')', style='cursor:pointer')                
+              div(style='clear:both; width:100%; height:1px; background-color:#F7D358; margin-top:20px; margin-bottom:5px')
+              |!{comentario.texto}
+            
+  #infoBBCode(style='display:none; position:absolute; width:400px; height:100px')
+
+  form#formEliminar(name='formEliminar', action="/blog/#{fechaHora.fechaToString(fechaBlog, 'DD-MM-YYYY')}", method='post')
+    input#_method(type='hidden', name='_method', value='delete')
+    input#tipo(type='hidden', name='tipo')
+
+  script.
+    var role = '#{session.usuario.role._id}';
+  
+    function modoEdicionTexto() {
+      $('#textoFijoBlog').hide();
+      $('#contenedorFoto').hide();
+      $('#publicacionFoto').hide();
+      $('.warning').hide();
+      $('#textoEditable').show();
+    }
+
+    function modoEdicionFoto() {
+      $('#textoFijoBlog').hide();
+      $('#textoEditable').hide();
+      $('#contenedorFoto').hide();
+      $('.warning').hide();
+      $('#publicacionFoto').show();
+    }
+  
+    function eliminarTexto() {
+      if(confirm('¿Estás seguro de querer eliminar el texto de la publicación?')) {
+        $('#tipo').val('texto');
+        $('#formEliminar').submit();
+      }
+    }
+
+    function eliminarFoto() {
+      if(confirm('¿Estás seguro de querer eliminar la foto de la publicación?')) {
+        $('#tipo').val('foto');
+        $('#formEliminar').submit();
+      }
+    }
+    
+    function publicarComentario() {
+      var comentario=nl2br($('#comentario').val());
+      $('#comentario').val('');
+      if(comentario == '') {
+        alert('Debes escribir un comentario');
+        $('#comentario').focus();        
+      }
+      else {
+        $('#btPublicarComentario').prop('disabled', true);
+        $('#comentario').prop('disabled', true);
+        $.ajax({
+          type: 'post',
+          url: '/blog/#{fechaHora.fechaToString(fechaBlog, 'DD-MM-YYYY')}/comentarios',
+          data: {comentario: comentario},
+          success: function(data) {
+            generarComentarios(data.comentarios);
+            $('#btPublicarComentario').removeAttr('disabled');
+            $('#comentario').removeAttr('disabled');
+          }
+        });
+      }
+    }
+  
+    function generarComentarios(comentarios) {
+      $('#comentarios').html('');    
+      for(var i = 0; i < comentarios.length; i++) {
+        var comentario = comentarios[i];
+        var html = '<div id="comentario_' + comentario._id + '" class="esquinasRedondas marron" style="margin-top:15px">' +
+                   '  <div style="float:left">' +
+                   '    <font style="color:brown; font-style:italic">'+comentario.usuario+'</font>' +
+                   '    <font style="color:#777777; font-style:italic"> (' + moment(comentario.fechaPublicacion).fromNow() + ')</font>' +
+                   '  </div>';
+                 
+        if(role == 'ADMIN') {
+          html += '  <div style="float:right">' +             
+                  '    <img src="/images/trash.png" width="16" onclick="eliminarComentario(\'' + comentario._id + '\')" style="cursor:pointer"/>' +
+                  '  </div>';
+        }
+    
+        html += '  <div style="clear:both; width:100%; height:1px; background-color:#F7D358; margin-top:20px; margin-bottom:5px"></div>' +
+                   comentario.texto +
+                '</div>';
+              
+        if(i == 0) {
+          $(html).hide().appendTo($('#comentarios')).fadeIn(1000);
+        }
+        else {
+          $(html).hide().appendTo($('#comentarios')).show();
+        }
+      }
+    }
+  
+    function comprobarPublicacionTexto() {
+      if($('#titulo').val().length == 0) {
+        alert('El título de la publicación es obligatorio');
+        $('#titulo').focus();
+        return false;
+      }
+      
+      return true;
+    }
+  
+    function eliminarComentario(idComentario) {
+      var msg = '¿Estás seguro de querer eliminar el comentario?';
+      if(confirm(msg)) {
+        $.ajax({
+          type: 'delete',
+          url: '/blog/#{fechaHora.fechaToString(fechaBlog, 'DD-MM-YYYY')}/comentarios/' + idComentario,
+          success: function(data) {
+            $('#comentario_' + idComentario).remove();
+          }
+        });
+      }
+    }
+  
+    function showInfoBBCode() {
+      var x = event.clientX;
+      var y = event.clientY;
+
+      $('#infoBBCode').css('left', x + 10);
+      $('#infoBBCode').css('top', y + 10);
+      $('#infoBBCode').html(getInfoBBCode());
+      $('#infoBBCode').show();
+    }
+
+    function hideInfoBBCode() {
+      $('#infoBBCode').hide();
+    }
+
+    $(function() {
+      $('#btCancelarTexto').click(function() {
+        $('#textoEditable').hide();
+        $('#textoFijoBlog').show();
+        $('#contenedorFoto').show();
+      });
+    
+      $('#btPublicarTexto').click(function() {
+        if(comprobarPublicacionTexto()) {
+          if(confirm('¿Estás seguro de querer publicar el texto?')) {
+            $('input[type="button"]').prop('disabled', true);
+            $('#formPublicacionTexto').submit();
+          }
+        }
+      });
+    
+      $('#btCancelarFoto').click(function() {
+        $('#publicacionFoto').hide();
+        $('#textoFijoBlog').show();
+        $('#contenedorFoto').show();
+      });
+    
+      $('#btPublicarFoto').click(function() {
+        if($('#foto').val().length == 0) {
+          alert('Selecciona la foto que quieres publicar');
+          return false;
+        }
+      
+        $('input[type="button"]').prop('disabled', true);
+        $('#infoEspera').css('display', 'block');
+        $('#formPublicacionFoto').submit();
+      });
+    
+      $('#btPublicarComentario').click(function() {
+        publicarComentario();
+      });
+    
+      var textoPublicado = bbcodeToHTML($('#texto').val());
+      textoPublicado = nl2br(textoPublicado);
+      $('#textoPublicado').html(textoPublicado);
+    });

@@ -1,0 +1,695 @@
+extends ../layout
+block append head
+  script(type='text/javascript', src='/javascripts/moment.min.js')
+  script(type='text/javascript', src='/javascripts/es.js')
+block content
+  - var separador = '|';
+  - var meses = fechaHora.obtenerMeses();
+  - var horas = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+  - var minutos = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59'];
+  
+  include ../mixins/agenda/formEvento
+
+  div(style='float:left; margin-top:20px; width:60%')
+    .fechaAgenda #{fechaHora.fechaToString(fecha, 'dddd, DD [de] MMMM [de] YYYY')}
+    .enlacesAgenda
+      .separadorEnlaces(style='float:left') #{separador}&nbsp;
+      div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='javascript:mostrarFormEvento()') Nuevo evento
+      .separadorEnlaces(style='float:left') &nbsp;#{separador}
+    
+    if(warningMessage)
+      #warning.warning.textLeft(style='clear:both; width:380px; margin-top:20px; margin-bottom:10px') #{warningMessage}
+
+    #eventos(style='clear:both')
+      - var separacionTiposEvento = '10px';
+      - if(eventosFechaSinHoraInicio.length > 0)
+          - separacionTiposEvento = '25px';
+          div(style='font-size:14px; color:brown; margin-bottom:10px') Eventos sin hora
+          - each evento in eventosFechaSinHoraInicio
+              .principalEvento
+                .cabeceraEvento
+                  table(border='0', width='100%')
+                    tr
+                      td(style='padding-left:5px', width='80px')
+                      - var tipo = evento.tipo;
+                      - if(tipo == 'PUNTUAL')
+                          - var fecha = evento.fecha.split('-');
+                          - tipo += ' [ ' + fecha[0] + ' ' + fechaHora.obtenerNombreMes(fecha[1]) + ' ' + fecha[2] + ' ]';
+                      - if(tipo == 'SEMANAL')
+                          - var fecha = evento.fecha.replace(/,/g, ', ');
+                          - tipo += ' [ ' + fecha + ' ]';
+                      - if(tipo == 'MENSUAL')
+                          - if(evento.fecha == 'FINAL_MES')
+                              - tipo += ' [ FINAL DE MES ]';
+                          - else
+                              - tipo += ' [ ' + evento.fecha + ' ]';
+                      - if(tipo == 'ANUAL')
+                          - var fecha = evento.fecha.split('-');
+                          - tipo += ' [ ' + fecha[0] + ' ' + fechaHora.obtenerNombreMes(fecha[1]) + ' ]';
+                      td(align='center') Evento #{tipo}
+                      td(align='right', style='padding-right:5px')
+                        font.separadorEnlacesEventos #{separador}&nbsp;
+                        a.enlaceEvento(href='javascript:editarEvento("#{evento._id}")') editar
+                        font.separadorEnlacesEventos &nbsp;#{separador}&nbsp;
+                        a.enlaceEvento(href='javascript:eliminarEvento("#{evento._id}")') eliminar
+                        font.separadorEnlacesEventos &nbsp;#{separador}
+                - var texto = evento.texto.replace(/\n/gi, '<br/>');
+                .cuerpoEvento !{texto}
+                - if(evento.lugar)
+                    - var lugar = evento.lugar.replace(/\n/gi, '<br/>');
+                    .lugarEvento !{lugar}
+                - if(evento.fechaInicio)
+                    - var validez = fechaHora.fechaToString(evento.fechaInicio, 'DD MMMM YYYY');
+                    - if(evento.fechaFin)
+                        - validez += ' - ' + fechaHora.fechaToString(evento.fechaFin, 'DD MMMM YYYY');
+                    .validezEvento #{validez}
+              mixin formEvento(evento)
+            
+      - if(eventosFechaConHoraInicio.length > 0)
+          div(style='font-size:14px; color:brown; margin-bottom:10px; margin-top:#{separacionTiposEvento}') Eventos con hora
+          - each evento in eventosFechaConHoraInicio
+              .principalEvento
+                - var separadorHora = ' - ';
+                - if(!evento.horaFin)
+                    - separadorHora = '';
+                .cabeceraEvento
+                  table(border='0', width='100%')
+                    tr
+                      td(style='padding-left:5px', width='80px')
+                        - if(evento.horaInicio)
+                            |#{evento.horaInicio}
+                        - if(evento.horaFin)    
+                            |#{separadorHora}#{evento.horaFin}
+                      - var tipo = evento.tipo;
+                      - if(tipo == 'PUNTUAL')
+                          - var fecha = evento.fecha.split('-');
+                          - tipo += ' [ ' + fecha[0] + ' ' + fechaHora.obtenerNombreMes(fecha[1]) + ' ' + fecha[2] + ' ]';
+                      - if(tipo == 'SEMANAL')
+                          - var fecha = evento.fecha.replace(/,/g, ', ');                    
+                          - tipo += ' [ ' + fecha + ' ]';
+                      - if(tipo == 'MENSUAL')
+                          - if(evento.fecha == 'FINAL_MES')
+                              - tipo += ' [ FINAL DE MES ]';
+                          - else
+                              - tipo += ' [ ' + evento.fecha + ' ]';
+                      - if(tipo == 'ANUAL')
+                          - var fecha = evento.fecha.split('-');
+                          - tipo += ' [ ' + fecha[0] + ' ' + fechaHora.obtenerNombreMes(fecha[1]) + ' ]';
+                      td(align='center') Evento #{tipo}
+                      td(align='right', style='padding-right:5px')
+                        font.separadorEnlacesEventos #{separador}&nbsp;
+                        a.enlaceEvento(href='javascript:editarEvento("#{evento._id}")') editar
+                        font.separadorEnlacesEventos &nbsp;#{separador}&nbsp;
+                        a.enlaceEvento(href='javascript:eliminarEvento("#{evento._id}")') eliminar
+                        font.separadorEnlacesEventos &nbsp;#{separador}
+                - var texto = evento.texto.replace(/\n/gi, '<br/>');
+                .cuerpoEvento !{texto}
+                - if(evento.lugar)
+                    - var lugar = evento.lugar.replace(/\n/gi, '<br/>');
+                    .lugarEvento !{lugar}
+                - if(evento.fechaInicio)
+                    - var validez = fechaHora.fechaToString(evento.fechaInicio, 'DD MMMM YYYY');
+                    - if(evento.fechaFin)
+                        - validez += ' - ' + fechaHora.fechaToString(evento.fechaFin, 'DD MMMM YYYY');
+                    .validezEvento #{validez}
+              mixin formEvento(evento)
+                
+    #edicionEvento(style='display:none')
+      div(style='clear:both; height:1px; width:95%; background-color:#CCCCCC')
+      form#formEdicionEvento(name='formEdicionEvento', method='post')
+        input#_method(type='hidden', name='_method')
+        input#fecha(type='hidden', name='fecha', value='#{fechaHora.fechaToString(fecha, "DD-MM-YYYY")}')
+        input#idEvento(type='hidden', name='idEvento')
+        table.edicionEvento(width='100', style='margin-top:10px')
+          tr.titulo
+            td Tipo evento
+          tr.campos
+            td
+              select#tipo(name='tipo', size='1', onchange='selTipo()')
+                option(value='PUNTUAL') Puntual
+                option(value='SEMANAL') Semanal
+                option(value='MENSUAL') Mensual
+                option(value='ANUAL') Anual
+              
+        #tipoPuntual(style='display:block; margin-top:10px')
+          table.edicionEvento(width='210')
+            tr.titulo
+              td Fecha
+            tr.campos
+              td
+                input#diaPuntual(type='text', name='diaPuntual', maxlength='2', style='width:25px; text-align:center')
+                font &nbsp;-&nbsp;
+                select#mesPuntual(name='mesPuntual', size='1')
+                  option(value='')
+                  - each mes in meses
+                      option(value='#{mes.numero}') #{mes.nombre}
+                font &nbsp;-&nbsp;
+                input#anyoPuntual(type='text', name='anyoPuntual', maxlength='4', style='width:40px; text-align:center')
+
+        #tipoSemanal(style='display:none; margin-top:10px')
+          table.edicionEvento(width='260')
+            tr.titulo
+              td(colspan='7') D&iacute;as
+            tr.campos
+              td(align='center'): font(style='color:brown') L
+              td(align='center'): font(style='color:brown') M
+              td(align='center'): font(style='color:brown') X
+              td(align='center'): font(style='color:brown') J
+              td(align='center'): font(style='color:brown') V
+              td(align='center'): font(style='color:brown') S
+              td(align='center'): font(style='color:brown') D
+            tr.campos
+              td(align='center'): input#LSemanal(type='checkbox', name='LSemanal', value='L')
+              td(align='center'): input#MSemanal(type='checkbox', name='MSemanal', value='M')
+              td(align='center'): input#XSemanal(type='checkbox', name='XSemanal', value='X')
+              td(align='center'): input#JSemanal(type='checkbox', name='JSemanal', value='J')
+              td(align='center'): input#VSemanal(type='checkbox', name='VSemanal', value='V')
+              td(align='center'): input#SSemanal(type='checkbox', name='SSemanal', value='S')
+              td(align='center'): input#DSemanal(type='checkbox', name='DSemanal', value='D')
+
+        #tipoMensual(style='display:none; margin-top:10px')
+          table.edicionEvento(width='150')
+            tr.titulo
+              td D&iacute;a
+              td(align='center') Final de mes
+            tr.campos
+              td: input#diaMensual(type='text', name='diaMensual', maxlength='2', style='width:25px; text-align:center')
+              td(align='center'): input#finalMesMensual(type='checkbox', name='finalMesMensual', value='FINAL_MES')
+
+        #tipoAnual(style='display:none; margin-top:10px')
+          table.edicionEvento(width='170')
+            tr.titulo
+              td D&iacute;a
+            tr.campos
+              td
+                input#diaAnual(type='text', name='diaAnual', maxlength='2', style='width:25px; text-align:center')
+                font &nbsp;-&nbsp;
+                select#mesAnual(name='mesAnual', size='1')
+                  option(value='')
+                  - each mes in meses
+                      option(value='#{mes.numero}') #{mes.nombre}
+
+        table.edicionEvento(width='260', style='margin-top:10px')
+          tr.titulo
+            td Hora inicio
+            td Hora fin
+          tr.campos
+            td
+              select#horaInicio(name='horaInicio', size='1')
+                option(value='')
+                - each hora in horas
+                    option(value='#{hora}') #{hora}
+              font &nbsp;:&nbsp;
+              select#minutoInicio(name='minutoInicio', size='1')
+                option(value='')
+                - each minuto in minutos
+                    option(value='#{minuto}') #{minuto}
+            td
+              select#horaFin(name='horaFin', size='1')
+                option(value='')
+                - each hora in horas
+                    option(value='#{hora}') #{hora}
+              font &nbsp;:&nbsp;
+              select#minutoFin(name='minutoFin', size='1')
+                option(value='')
+                - each minuto in minutos
+                    option(value='#{minuto}') #{minuto}
+
+        table.edicionEvento(width='440', style='margin-top:10px')
+          tr.titulo
+            td Texto evento
+          tr.campos
+            td: textarea#texto(name='texto', cols='80', rows='5', style='resize:none')
+          
+        table.edicionEvento(width='440', style='margin-top:10px')
+          tr.titulo
+            td Lugar
+          tr.campos
+            td: textarea#lugar(name='lugar', cols='80', rows='2', style='resize:none')
+            
+        #caducidadEvento(style='display:none')
+          table.edicionEvento(width='440', style='margin-top:10px')
+            tr.titulo
+              td Fecha inicio
+              td Fecha fin
+            tr.campos
+              td
+                input#diaFechaInicio(type='text', name='diaFechaInicio', maxlength='2', style='width:25px; text-align:center')
+                font &nbsp;-&nbsp;
+                select#mesFechaInicio(name='mesFechaInicio', size='1')
+                  option(value='')
+                  - each mes in meses
+                      option(value='#{mes.numero}') #{mes.nombre}
+                font &nbsp;-&nbsp;
+                input#anyoFechaInicio(type='text', name='anyoFechaInicio', maxlength='4', style='width:40px; text-align:center')
+              td
+                input#diaFechaFin(type='text', name='diaFechaFin', maxlength='2', style='width:25px; text-align:center')
+                font &nbsp;-&nbsp;
+                select#mesFechaFin(name='mesFechaFin', size='1')
+                  option(value='')
+                  - each mes in meses
+                      option(value='#{mes.numero}') #{mes.nombre}
+                font &nbsp;-&nbsp;
+                input#anyoFechaFin(type='text', name='anyoFechaFin', maxlength='4', style='width:40px; text-align:center')
+
+        input#btCrearEvento(type='button', name='btCrearEvento', value='crear', style='margin-top:10px; display:none', onclick='crearEvento()')
+        input#btModificarEvento(type='button', name='btModificarEvento', value='modificar', style='margin-top:10px; display:none', onclick='modificarEvento()')
+        input#btCancelar(type='button', name='btCancelar', value='cancelar', style='margin-top:10px; margin-left:5px', onclick='ocultarFormEvento()')
+        
+  div(style='width:40%; float:right; margin-top:20px')
+    include ../includes/agenda/calendario
+  
+  script.
+    var fecha = '#{fechaHora.fechaToString(fecha, "DD-MM-YYYY")}';
+    var arrayFecha = fecha.split('-');
+  
+    function limpiarFormEvento() {
+      $('#tipo').val('PUNTUAL');
+      selTipo();
+      if($('#diaPuntual')) {
+        $('#diaPuntual').val('');
+      }
+      if($('#mesPuntual')) {
+        $('#mesPuntual').val('');
+      }
+      if($('#anyoPuntual')) {
+        $('#anyoPuntual').val('');
+      }
+      if($('#LSemanal')) {
+        $('#LSemanal').removeAttr('checked');
+      }
+      if($('#MSemanal')) {
+        $('#MSemanal').removeAttr('checked');
+      }
+      if($('#XSemanal')) {
+        $('#XSemanal').removeAttr('checked');
+      }
+      if($('#JSemanal')) {
+        $('#JSemanal').removeAttr('checked');
+      }
+      if($('#VSemanal')) {
+        $('#VSemanal').removeAttr('checked');
+      }
+      if($('#SSemanal')) {
+        $('#SSemanal').removeAttr('checked');
+      }
+      if($('#DSemanal')) {
+        $('#DSemanal').removeAttr('checked');
+      }
+      if($('#diaMensual')) {
+        $('#diaMensual').val('');
+      }
+      if($('#finalMesMensual')) {
+        $('#finalMesMensual').removeAttr('checked');
+      }
+      if($('#diaAnual')) {
+        $('#diaAnual').val('');
+      }
+      if($('#mesAnual')) {
+        $('#mesAnual').val('');
+      }
+      $('#horaInicio').val('');
+      $('#minutoInicio').val('');
+      $('#horaFin').val('');
+      $('#minutoFin').val('');
+      $('#texto').val('');
+      $('#lugar').val('');
+      if($('#diaFechaInicio')) {
+        $('#diaFechaInicio').val('');
+      }
+      if($('#mesFechaInicio')) {
+        $('#mesFechaInicio').val('');
+      }
+      if($('#anyoFechaInicio')) {
+        $('#anyoFechaInicio').val('');
+      }
+      if($('#diaFechaFin')) {
+        $('#diaFechaFin').val('');
+      }
+      if($('#mesFechaFin')) {
+        $('#mesFechaFin').val('');
+      }
+      if($('#anyoFechaFin')) {
+        $('#anyoFechaFin').val('');
+      }
+    }
+
+    function mostrarFormEvento() {
+      limpiarFormEvento();
+      $('#diaPuntual').val(arrayFecha[0]);
+      $('#mesPuntual').val(arrayFecha[1]);
+      $('#anyoPuntual').val(arrayFecha[2]);
+      $('#eventos').hide();
+      $('#edicionEvento').show();
+      $('#btCrearEvento').show();
+      $('#btModificarEvento').hide();
+    }
+  
+    function ocultarFormEvento() {
+      $('#eventos').show();
+      $('#edicionEvento').hide();
+    }
+  
+    function selTipo() {
+      var tipo = $('#tipo').val();
+      if(tipo == 'PUNTUAL') {
+        $('#tipoPuntual').show();
+        $('#tipoSemanal').hide();
+        $('#tipoMensual').hide();
+        $('#tipoAnual').hide();
+        $('#caducidadEvento').hide();
+      }
+      else if(tipo == 'SEMANAL') {
+        $('#tipoPuntual').hide();
+        $('#tipoSemanal').show();
+        $('#tipoMensual').hide();
+        $('#tipoAnual').hide();
+        $('#caducidadEvento').show();
+      }
+      else if(tipo == 'MENSUAL') {
+        $('#tipoPuntual').hide();
+        $('#tipoSemanal').hide();
+        $('#tipoMensual').show();
+        $('#tipoAnual').hide();
+        $('#caducidadEvento').show();
+      }
+      else if(tipo == 'ANUAL') {
+        $('#tipoPuntual').hide();
+        $('#tipoSemanal').hide();
+        $('#tipoMensual').hide();
+        $('#tipoAnual').show();
+        $('#caducidadEvento').show();
+      }
+    }
+  
+    function datosEventoCorrectos() {
+      var tipo = $('#tipo').val();
+      if(tipo == 'PUNTUAL') {
+        var diaPuntual = $('#diaPuntual');
+        if(diaPuntual.val() == '') {
+          alert('Debes indicar el día del evento');
+          diaPuntual.focus();
+          return false;
+        }
+      
+        var mesPuntual = $('#mesPuntual');
+        if(mesPuntual.val() == '') {
+          alert('Debes indicar el mes del evento');
+          mesPuntual.focus();
+          return false;
+        }
+      
+        var anyoPuntual = $('#anyoPuntual');
+        if(anyoPuntual.val() == '') {
+          alert('Debes indicar el año del evento');
+          anyoPuntual.focus();
+          return false;
+        }
+      
+        if(diaPuntual.val().length == 1) {
+          diaPuntual.val('0' + diaPuntual.val());
+        }
+        
+        if(!moment(diaPuntual.val() + mesPuntual.val() + anyoPuntual.val(), 'DDMMYYYY').isValid()) {
+          alert('La fecha introducida es incorrecta');
+          return false;
+        }
+      }
+      else if(tipo == 'SEMANAL') {
+        var LSemanal = $('#LSemanal').is(':checked');
+        var MSemanal = $('#MSemanal').is(':checked');
+        var XSemanal = $('#XSemanal').is(':checked');
+        var JSemanal = $('#JSemanal').is(':checked');
+        var VSemanal = $('#VSemanal').is(':checked');
+        var SSemanal = $('#SSemanal').is(':checked');
+        var DSemanal = $('#DSemanal').is(':checked');
+      
+        if(!LSemanal && !MSemanal && !XSemanal && !JSemanal && !VSemanal && !SSemanal && !DSemanal) {
+          alert('Debes marcar como mínimo un día de la semana');
+          return false;
+        }
+      }
+      else if(tipo == 'MENSUAL') {
+        var diaMensual = $('#diaMensual');
+        var finalMesMensual = $('#finalMesMensual').is(':checked');
+      
+        if(diaMensual.val() == '' && !finalMesMensual) {
+          alert('Debes indicar el día o seleccionar final de mes');
+          diaMensual.focus();
+          return false;
+        }
+      
+        if(diaMensual.val() != '' && finalMesMensual) {
+          alert('Debes especificar el día o seleccionar final de mes.\r\nLos dos campos son incompatibles.');
+          diaMensual.focus();
+          return false;
+        }
+      
+        if(diaMensual.val() != '') {
+          var nDiaMensual = new Number(diaMensual.val());
+          if(new String(nDiaMensual) == 'NaN') {
+            alert('El día indicado es incorrecto');
+            diaMensual.focus();
+            return false;          
+          }
+        
+          if(nDiaMensual < 1 || nDiaMensual > 31) {
+            alert('El día indicado es incorrecto');
+            diaMensual.focus();
+            return false;
+          }
+        
+          if(diaMensual.val().length == 1) {
+            diaMensual.val('0' + diaMensual.val());
+          }
+        }
+      }
+      else if(tipo == 'ANUAL') {
+        var diaAnual = $('#diaAnual');
+        if(diaAnual.val() == '') {
+          alert('Debes indicar el día del mes');
+          diaAnual.focus();
+          return false;
+        }
+      
+        var nDiaAnual = new Number(diaAnual.val());
+        if(new String(nDiaAnual) == 'NaN') {
+          alert('El día indicado es incorrecto');
+          diaAnual.focus();
+          return false;
+        }
+      
+        if(nDiaAnual < 1 || nDiaAnual > 31) {
+          alert('El día indicado es incorrecto');
+          diaAnual.focus();
+          return false;
+        }
+      
+        var mesAnual = $('#mesAnual');
+        if(mesAnual.val() == '') {
+          alert('Debes indicar el mes');
+          mesAnual.focus();
+          return false;
+        }
+      
+        if(diaAnual.val().length == 1) {
+          diaAnual.val('0' + diaAnual.val());
+        }
+      
+        if(!moment(diaAnual.val() + mesAnual.val(), 'DDMM').isValid()) {
+          alert('La fecha indicada es incorrecta');
+          diaAnual.focus();
+          return false;
+        }
+      }
+    
+      var horaInicio = $('#horaInicio');
+      var minutoInicio = $('#minutoInicio');
+    
+      if(horaInicio.val() != '' || minutoInicio.val() != '') {
+        if(!moment(horaInicio.val() + minutoInicio.val(), 'HHmm').isValid()) {
+          alert('Hora inicio incorrecta');
+          horaInicio.focus();
+          return false;
+        }
+      }
+
+      var horaFin = $('#horaFin');
+      var minutoFin = $('#minutoFin');
+    
+      if(horaFin.val() != '' || minutoFin.val() != '') {
+        if(!moment(horaFin.val() + minutoFin.val(), 'HHmm').isValid()) {
+          alert('Hora fin incorrecta');
+          horaFin.focus();
+          return false;
+        }
+      }
+
+      var texto = $('#texto');
+      if(texto.val() == '') {
+        alert('Debes especificar el evento');
+        texto.focus();
+        return false;
+      }
+    
+      if(tipo != 'PUNTUAL') {
+        var diaFechaInicio = $('#diaFechaInicio');
+        var mesFechaInicio = $('#mesFechaInicio');
+        var anyoFechaInicio = $('#anyoFechaInicio');
+
+        if(diaFechaInicio.val().length == 1) {
+          diaFechaInicio.val('0' + diaFechaInicio.val());
+        }
+
+        if(diaFechaInicio.val() != '' || mesFechaInicio.val() != '' || anyoFechaInicio.val() != '') {
+          if(!moment(diaFechaInicio.val() + mesFechaInicio.val() + anyoFechaInicio.val(), 'DDMMYYYY').isValid()) {
+            alert('La fecha inicio de caducidad es incorrecta');
+            diaFechaInicio.focus();
+            return false;
+          }
+        }
+
+        var diaFechaFin = $('#diaFechaFin');
+        var mesFechaFin = $('#mesFechaFin');
+        var anyoFechaFin = $('#anyoFechaFin');
+
+        if(diaFechaFin.val().length == 1) {
+          diaFechaFin.val('0' + diaFechaFin.val());
+        }
+
+        if(diaFechaFin.val() != '' || mesFechaFin.val() != '' || anyoFechaFin.val() != '') {
+          if(!moment(diaFechaFin.val() + mesFechaFin.val() + anyoFechaFin.val(), 'DDMMYYYY').isValid()) {
+            alert('La fecha fin de caducidad es incorrecta');
+            diaFechaFin.focus();
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+  
+    function editarEvento(idEvento) {
+      mostrarFormEvento();
+      $('#btCrearEvento').hide();
+      $('#btModificarEvento').show();
+      $('#idEvento').val(idEvento);    
+      var tipo = $('#' + idEvento + '_tipo').val();
+      $('#tipo').val(tipo);
+      selTipo();
+    
+      if(tipo == 'PUNTUAL') {
+        $('#diaPuntual').val($('#' + idEvento + '_dia').val());
+        $('#mesPuntual').val($('#' + idEvento + '_mes').val());
+        $('#anyoPuntual').val($('#' + idEvento + '_anyo').val());
+      }
+      else if(tipo == 'SEMANAL') {
+        if($('#' + idEvento + '_L') && $('#' + idEvento + '_L').val() == 'L') {
+          $('#LSemanal').prop('checked', true);
+        }
+        if($('#' + idEvento + '_M') && $('#' + idEvento + '_M').val() == 'M') {
+          $('#MSemanal').prop('checked', true);
+        }
+        if($('#' + idEvento + '_X') && $('#' + idEvento + '_X').val() == 'X') {
+          $('#XSemanal').prop('checked', true);
+        }
+        if($('#' + idEvento + '_J') && $('#' + idEvento + '_J').val() == 'J') {
+          $('#JSemanal').prop('checked', true);
+        }
+        if($('#' + idEvento + '_V') && $('#' + idEvento + '_V').val() == 'V') {
+          $('#VSemanal').prop('checked', true);
+        }
+        if($('#' + idEvento + '_S') && $('#' + idEvento + '_S').val() == 'S') {
+          $('#SSemanal').prop('checked', true);
+        }
+        if($('#' + idEvento + '_D') && $('#' + idEvento + '_D').val() == 'D') {
+          $('#DSemanal').prop('checked', true);
+        }
+      }
+      else if(tipo == 'MENSUAL') {
+        var dia = $('#' + idEvento + '_dia').val();
+        if(dia == 'FINAL_MES') {
+          $('#finalMesMensual').prop('checked', true);
+        }
+        else {
+          $('#diaMensual').val(dia);
+        }
+      }
+      else if(tipo == 'ANUAL') {
+        $('#diaAnual').val($('#' + idEvento + '_dia').val());
+        $('#mesAnual').val($('#' + idEvento + '_mes').val());
+      }
+    
+      if($('#' + idEvento + '_horaInicio')) {
+        $('#horaInicio').val($('#' + idEvento + '_horaInicio').val());
+        $('#minutoInicio').val($('#' + idEvento + '_minutoInicio').val());
+      }
+
+      if($('#' + idEvento + '_horaFin')) {
+        $('#horaFin').val($('#' + idEvento + '_horaFin').val());
+        $('#minutoFin').val($('#' + idEvento + '_minutoFin').val());
+      }
+    
+      $('#texto').val($('#' + idEvento + '_texto').val());
+    
+      if($('#' + idEvento + '_lugar')) {
+        $('#lugar').val($('#' + idEvento + '_lugar').val());
+      }
+    
+      if(tipo != 'PUNTUAL') {
+        if($('#' + idEvento + '_diaFechaInicio')) {
+          $('#diaFechaInicio').val($('#' + idEvento + '_diaFechaInicio').val());
+        }
+        if($('#' + idEvento + '_mesFechaInicio')) {
+          $('#mesFechaInicio').val($('#' + idEvento + '_mesFechaInicio').val());
+        }
+        if($('#' + idEvento + '_anyoFechaInicio')) {
+          $('#anyoFechaInicio').val($('#' + idEvento + '_anyoFechaInicio').val());
+        }
+        if($('#' + idEvento + '_diaFechaFin')) {
+          $('#diaFechaFin').val($('#' + idEvento + '_diaFechaFin').val());
+        }
+        if($('#' + idEvento + '_mesFechaFin')) {
+          $('#mesFechaFin').val($('#' + idEvento + '_mesFechaFin').val());
+        }
+        if($('#' + idEvento + '_anyoFechaFin')) {
+          $('#anyoFechaFin').val($('#' + idEvento + '_anyoFechaFin').val());
+        }
+      }
+    }
+  
+    function crearEvento() {
+      if(datosEventoCorrectos()) {
+        $('#btCrearEvento').prop('disabled', true);
+        $('#btCancelar').prop('disabled', true);
+        $('#formEdicionEvento').attr('action', '/agenda');
+        $('#_method').val('post');
+        $('#formEdicionEvento').submit();
+      }
+    }
+  
+    function modificarEvento() {
+      if(datosEventoCorrectos()) {
+        $('#btModificarEvento').prop('disabled', true);
+        $('#btCancelar').prop('disabled', true);
+        $('#formEdicionEvento').attr('action', '/agenda/' + $('#idEvento').val());
+        $('#_method').val('put');
+        $('#formEdicionEvento').submit();
+      }
+    }
+  
+    function eliminarEvento(idEvento) {
+      if(confirm('¿Estás seguro de querer eliminar el evento?')) {
+        $('#formEdicionEvento').attr('action', '/agenda/' + idEvento);
+        $('#_method').val('delete');
+        $('#formEdicionEvento').submit();
+      }
+    }
+  
+    $(function() {
+      if($('#warning')) {
+        setTimeout(function() {
+          $('#warning').fadeOut(1000);
+        }, 3000);
+      }
+    });

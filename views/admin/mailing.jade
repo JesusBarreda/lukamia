@@ -1,0 +1,53 @@
+extends ../layout
+block content
+  div(style='float:left; margin-top:5px; width:40%')
+    table.mailing(cellspacing='1', cellpadding='3')
+      thead
+        tr: th Email
+      tbody
+        - each email,i in mailing
+            tr(class=(i % 2 == 0) ? 'filaPar' : 'filaImpar')
+              td(width='100%', align='center') #{email.email}
+  div(style='float:right; margin-top:20px; width:60%')
+    form#formMailing(name='formMailing', action='/admin/mailing', method='post')
+      .esquinasRedondas.marron(style='padding:20px; width:440px')
+        table
+          tr: td.nombreCampo Título mensaje
+          tr: td: input#titulo(name='titulo', style='width:420px')
+          tr: td(height='10')
+          tr: td.nombreCampo Texto mensaje
+          tr: td: textarea#texto(name='texto', cols='80', rows='10', style='resize:none')
+          tr: td: input#btEnviar(type='button', name='btEnviar', value='enviar', onclick='enviar()')
+
+  script.
+    var numDestinatarios = #{mailing.length};
+    var msg = '#{msg}';
+    function enviar() {
+      if(numDestinatarios == 0) {
+        alert('No hay destinatarios a quienes enviar el correo');
+        return;
+      }
+            
+      var titulo = $('#titulo');
+      if(titulo.val() == '') {
+        alert('Debes especificar un título para el mensaje');
+        titulo.focus();
+        return;
+      }
+      
+      var texto = $('#texto');
+      if(texto.val() == '') {
+        alert('Debes especificar un texto para el mensaje');
+        texto.focus();
+        return;
+      }
+      
+      $('input[type="button"]').prop('disabled', true);
+      $('#formMailing').submit();
+    }
+    
+    $(function() {
+      if(msg.length != 0) {
+        alert(msg);
+      }
+    });

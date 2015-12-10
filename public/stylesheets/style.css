@@ -1,0 +1,500 @@
+/**
+ * Estilos generales
+ */
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: #FBFBEF;
+  font-size: 12px;
+}
+
+a.enlace {
+  font-size: 12px;
+  color: #006699;
+  text-decoration: none;
+}
+
+a.enlace:hover {
+  font-size: 12px;
+  color: #FF6600;
+  text-decoration: underline;
+}
+
+.separadorEnlaces {
+  font-size: 14px;
+  color: #006699;
+}
+
+div#cabecera {
+  width: 99%;
+  color: #C8FE2E;
+  text-align: center;
+  background-image: url('/images/backgroundHeader.jpg');
+  border: solid 4px #C8FE2E;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-box-shadow: 5px 5px 5px #CCCCCC;
+  -moz-box-shadow: 5px 5px 5px #CCCCCC;
+}
+
+div#body {
+  clear: both;
+  margin-left: 10px;
+}
+
+div.footer {
+  position: absolute;
+  width: 95%;
+  height: 25px;
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  color: #BBBBBB;
+  bottom: 5px;
+  border-top: solid 1px #C8FE2E;
+}
+
+div.autentificacion {
+  font-size: 14px;
+  color: #006633;
+  width: 250px;
+  text-align: center;
+  margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  border: solid 2px #C8FE2E;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-box-shadow: 5px 5px 5px #CCCCCC;
+  -moz-box-shadow: 5px 5px 5px #CCCCCC;
+}
+
+div.autentificacion input[type=password], div.autentificacion input[type=text] {
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 7px;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+}
+
+div.autentificacion input[type=submit], div.autentificacion input[type=submit] {
+  margin-top: 10px;
+}
+
+div.textCenter {
+  text-align: center;
+}
+
+div.textLeft {
+  text-align: left;
+}
+
+div.warning {
+  font-size: 12px;
+  color: #CD0000;
+  background-color: #FFDCC7;
+  border: solid 1px #FF7F17;
+  width: 100%;
+  padding: 10px;
+}
+
+div.info {
+  font-size: 12px;
+  color: #006699;
+  background-color: #DDF2FA;
+  border: solid 1px #3783FF;
+  width: 100%;
+  padding: 10px;
+}
+
+div#menu {
+  margin-top: 15px;
+  height: 30px;
+}
+
+div.botonMenu {
+  width: 100px;
+  height: 20px;
+  border: solid 1px #006633;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  background-color: #0099CC;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;  
+  text-align: center;
+  padding-top: 5px;
+  margin-left: 10px;
+}
+
+div.botonMenuSel {
+  width: 100px;
+  height: 20px;
+  border: solid 1px #FF0000;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  background-color: #FF6600;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 5px;
+  margin-left: 10px;  
+}
+
+div.esquinasRedondas {
+  padding-top: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  border: solid 2px;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-box-shadow: 5px 5px 5px #CCCCCC;
+  -moz-box-shadow: 5px 5px 5px #CCCCCC;
+}
+
+div.azul {
+  border-color: #006699;
+  background-color: #EFFBFB;
+}
+
+div.marron {
+  border-color: #F7BE81;
+  background-color: #F7F2E0;
+}
+
+td.nombreCampo, label.nombreCampo {
+  color: #006699;
+}
+
+textarea, input {
+  font-size: 12px;
+}
+
+font.usuario {
+  font-style: italic;
+  color: brown;
+}
+
+font.role {
+  color: #888888;
+}
+
+/**
+ * Estilos módulo: Mis Papás
+ */
+div.fotosMisPapas {
+  height: 300px;
+  width: 250px;
+  margin-top: 15px;
+}
+
+div.fotosMisPapas img, div.fotoLuka img, div.fotoMia img {
+  padding: 15px;
+  border: 1px solid #CCC;
+  background-color: #EEE;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  box-shadow: 5px 5px 5px #DDDDDD;
+  -moz-box-shadow: 5px 5px 5px #DDDDDD;
+  -webkit-box-shadow: 5px 5px 5px #DDDDDD;
+}
+
+div.datosPersonales {
+  border: solid 1px #336699;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  background-color: #EEEEEE;
+  box-shadow: 5px 5px 5px #DDDDDD;
+  -moz-box-shadow: 5px 5px 5px #DDDDDD;
+  -webkit-box-shadow: 5px 5px 5px #DDDDDD;
+  width: 260px;
+  height: 60px;
+  padding: 10px;
+}
+
+div.datosPersonales table td {
+  background-color: #FFFFFF;
+  padding-left: 5px;
+}
+
+div.datosPersonales table td.nombreCampo {
+  width: 100px;
+  color: #006699;
+}
+
+div.datosPersonales table td.valorCampo {
+  width: 200px;
+  color: #006633;
+}
+
+/**
+ * Estilos módulo: Fotos
+ */
+div.album {
+  float: left;
+  padding-top: 20px;
+  margin-right: 50px;
+}
+
+div.fotoPortadaAlbum {
+  width: 200px;
+  height: 150px;
+  text-align: center;
+  cursor: pointer;
+}
+
+div.descripcionAlbum {
+  width: 200px;
+}
+
+div.tituloAlbum {
+  padding-top: 5px;
+  color: #006633;
+}
+
+div.tituloAlbum a {
+  text-decoration: none;
+  color: #006633;
+}
+
+div.tituloAlbum a:hover {
+  text-decoration: underline;
+}
+
+div.fechaAlbum {
+  padding-top: 3px;
+  color: #888888;
+}
+
+div.fotoAlbum {
+  border-style: solid;
+  border-color: #FFFFFF;
+  border-width: 20px;
+  width: 70%;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-box-shadow: 5px 5px 5px #CCCCCC;
+  -moz-box-shadow: 5px 5px 5px #CCCCCC;
+}
+
+/**
+ * Estilos módulo: Blog
+ */
+div.fechaBlog {
+  float: left;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #666666;
+}
+
+div.enlacesBlog {
+  float: right;
+  margin-bottom: 10px;
+  margin-right: 40px;
+}
+
+div.tituloPublicacionBlog {
+  padding-left: 10px;
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #339966;
+}
+
+div.fotoBlog {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-style: solid;
+  border-color: #FFFFFF;
+  border-width: 20px;
+  width: 70%;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-box-shadow: 5px 5px 5px #CCCCCC;
+  -moz-box-shadow: 5px 5px 5px #CCCCCC;
+}
+
+div.textoFijoBlog {
+  clear: both;
+  margin-top: 20px;
+  width: 95%;
+  background-color: #FFFFFF;
+  border: solid 2px #BDBDBD;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-box-shadow: 5px 5px 5px #CCCCCC;
+  -moz-box-shadow: 5px 5px 5px #CCCCCC;
+}
+
+div.infoPublicacionesBlog {
+  margin-bottom: 10px;
+  color: #888888;
+}
+
+/**
+ * Estilos módulo: Gastos
+ */
+table#gastos {
+  background-color: #FFFFFF;
+}
+
+table#gastos th.nombreCampo {
+  background-color: #777777;
+  color: #FFFFFF;
+}
+
+/**
+ * Estilos módulo: Agenda
+ */
+div.fechaAgenda {
+  float: left;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #666666;
+}
+
+div.enlacesAgenda {
+  float: right;
+  margin-bottom: 10px;
+  margin-right: 100px;
+}
+
+a.enlaceEvento {
+  color: #FFFFFF;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+a.enlaceEvento:hover {
+  color: brown;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.separadorEnlacesEventos {
+  font-size: 14px;
+}
+
+table.edicionEvento {
+  background-color: #FFFFFF;  
+}
+
+table.edicionEvento tr.titulo {
+  background-color: #F7BE81;
+  color: #FFFFFF;
+}
+
+table.edicionEvento tr.campos {
+  background-color: #F7F2E0;
+}
+
+table.edicionEvento tr td {
+  padding-left: 5px;
+}
+
+div.principalEvento {
+  width: 85%;
+  margin-bottom: 25px;
+  -webkit-box-shadow: 7px 7px 7px #DDDDDD;
+  -moz-box-shadow: 7px 7px 7px #DDDDDD;
+}
+
+div.cabeceraEvento {
+  background-color: #339966;
+  border: solid 1px #339966;
+}
+
+div.cabeceraEvento table {
+  color: #FFFFFF;
+}
+
+div.cuerpoEvento {
+  color: #666666;
+  padding: 5px;
+  background-color: #FFFFFF;
+}
+
+div.lugarEvento {
+  padding-top: 5px;
+  border-top: solid 1px #CCCCCC;
+  color: #339966;
+  padding: 5px;
+  background-color: #FFFFFF;
+}
+
+div.validezEvento {
+  padding-top: 5px;
+  color: #CC6600;
+  padding: 5px;
+  border-top: solid 1px #CCCCCC;
+  background-color: #FFFFFF;
+}
+
+/**
+ * Estilo tabla: admin/accesos, admin/mailing
+ */
+table.accesos, table.mailing {
+  margin-top: 15px;
+  width: 400px;
+  background-color: #FFFFFF;
+}
+
+table.accesos th, table.mailing th {
+  background-color: #777777;
+  color: #FFFFFF;
+}
+
+table.accesos tr.filaImpar, table.mailing tr.filaImpar {
+  background-color: #FFFFFF;
+}
+
+table.accesos tr.filaPar, table.mailing tr.filaPar {
+  background-color: #EEEEEE;
+}
+
+/**
+ * Estilos mailing
+ */
+#bloqueoPantalla {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  background-color: #eeeeee;
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+  display: none;
+}
+
+#mailing {
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #006699;
+  font-size: 14px;
+  color: #006699;
+  padding: 15px;
+  display: inline-block;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  display: none;
+}

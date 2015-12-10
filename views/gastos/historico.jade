@@ -1,0 +1,181 @@
+extends ../layout
+block append head
+  script(type='text/javascript', src='/javascripts/RGraph.common.core.js')
+  script(type='text/javascript', src='/javascripts/RGraph.common.dynamic.js')
+  script(type='text/javascript', src='/javascripts/RGraph.common.tooltips.js')
+  script(type='text/javascript', src='/javascripts/RGraph.line.js')
+  script(type='text/javascript', src='/javascripts/RGraph.bar.js')
+block content
+  - var separador = '|';
+
+  div(style='float:left; width:50%; margin-top:10px')
+    table
+      tr
+        td.nombreCampo(colspan='2') &nbsp;Desde
+        td(width='10')
+        td.nombreCampo(colspan='2') &nbsp;Hasta
+        td(width='10')
+        td.nombreCampo &nbsp;Tipo gr&aacute;fico
+      tr
+        td
+          select#mesDesde(name='mesDesde', size='1')
+            option(value='')
+            - each mes in meses
+                - if(mesDesde && (mesDesde == mes.numero))
+                    option(value='#{mes.numero}', selected='selected') #{mes.nombre}
+                - else
+                    option(value='#{mes.numero}') #{mes.nombre}
+        td: input#anyoDesde(type='text', name='anyoDesde', size='2', maxlength='4', value='#{anyoDesde}', style='text-align:center')
+        td(width='10')
+        td
+          select#mesHasta(name='mesHasta', size='1')
+            option(value='')
+            - each mes in meses
+                - if(mesHasta && (mesHasta == mes.numero))
+                    option(value='#{mes.numero}', selected='selected') #{mes.nombre}
+                - else
+                    option(value='#{mes.numero}') #{mes.nombre}
+        td: input#anyoHasta(type='text', name='anyoHasta', size='2', maxlength='4', value='#{anyoHasta}', style='text-align:center')
+        td(width='10')
+        td
+          select#tipoGrafico(name='tipoGrafico', size='1')
+            - if(tipoGrafico == 'barras')
+                option(value='barras', selected='selected') Barras
+            - else
+                option(value='barras') Barras
+          
+            - if(tipoGrafico == 'curva')
+                option(value='curva', selected='selected') Curva
+            - else
+                option(value='curva') Curva
+        td(width='10')
+        td: input#btAceptar(type='button', name='btAceptar', value='aceptar')
+        
+  div(style='float:right; margin-right:10px; margin-top:30px')
+    .separadorEnlaces(style='float:left') #{separador}&nbsp;
+    div(style='float:left; height:12px; margin-top:2px'): a.enlace(href='/gastos') Gastos
+    .separadorEnlaces(style='float:left') &nbsp;#{separador}
+  
+  #divGraficos(style='clear:both; margin-top:10px')
+    canvas#grafico(width='950', height='400')
+  
+  script.
+    var maxFechas = 12;
+    var gastos = #{gastos};
+    var fechas = !{fechas};
+    var tooltips = !{tooltips};
+    var tipoGrafico = '#{tipoGrafico}';
+  
+    function formatEuro(obj, num) {
+      return num + ' €';
+    }
+  
+    function dibujarGraficoBarras() {
+      var grafico = new RGraph.Bar('grafico', gastos);
+
+      if(fechas.length <= maxFechas) {
+        grafico.Set('chart.labels', fechas);
+      }
+    
+      grafico.Set('chart.tooltips', tooltips);
+      grafico.Set('chart.tooltips.event', 'onmousemove');
+      grafico.Set('chart.scale.formatter', formatEuro);
+      grafico.Set('chart.background.barcolor1', 'white');
+      grafico.Set('chart.background.grid', true);
+      grafico.Set('chart.gutter.left', 50);
+      grafico.Set('chart.colors', ['#FF0000']);
+      grafico.Set('chart.text.size', 8);    
+      grafico.Draw();
+    }
+  
+    function dibujarGraficoCurva() {
+      var grafico=new RGraph.Line('grafico', gastos);
+    
+      if(fechas.length <= maxFechas) {
+        grafico.Set('chart.labels', fechas);
+      }
+    
+      grafico.Set('chart.tooltips', tooltips);
+      grafico.Set('chart.tooltips.event', 'onmousemove');
+      grafico.Set('chart.scale.formatter', formatEuro);
+      grafico.Set('chart.background.grid',true);
+      grafico.Set('chart.linewidth', 1);
+      grafico.Set('chart.gutter.left', 50);
+      grafico.Set('chart.colors', ['#FF0000']);
+      grafico.Set('chart.text.size', 8);
+      grafico.Set('chart.text.angle', 0);
+      grafico.Set('chart.curvy', 1);
+      grafico.Set('chart.curvy.factor', 0);    
+      grafico.Set('chart.tickmarks', 'circle');
+      grafico.Draw();
+    }
+  
+    $(function() {
+      $('#btAceptar').click(function() {
+        if($('#mesDesde').val() != '' || $('#mesHasta').val() != '') {
+          if($('#mesDesde').val() == '') {
+            alert('Debes indicar el mes desde');
+            $('#mesDesde').focus();
+            return;
+          }
+        
+          if($('#mesHasta').val() == '') {
+            alert('Debes indicar el mes hasta');
+            $('#mesHasta').focus();
+            return;
+          }
+        }
+      
+        if(jQuery.trim($('#anyoDesde').val()) == '') {
+          alert('Debes indicar el año desde');
+          $('#anyoDesde').focus();
+          return;
+        }
+        else {
+          var anyoDesde = new Number($('#anyoDesde').val());
+          if(new String(anyoDesde) == 'NaN') {
+            alert('El formato del año desde es incorrecto');
+            $('#anyoDesde').focus();
+            return;
+          }
+        }
+      
+        if(jQuery.trim($('#anyoHasta').val()) == '') {
+          alert('Debes indicar el año hasta');
+          $('#anyoHasta').focus();
+          return;
+        }
+        else {
+          var anyoHasta = new Number($('#anyoHasta').val());
+          if(new String(anyoHasta) == 'NaN') {
+            alert('El formato del año hasta es incorrecto');
+            $('#anyoHasta').focus();
+            return;
+          }
+        }
+      
+        var fechaDesde = new Number($('#anyoDesde').val() + $('#mesDesde').val());
+        var fechaHasta = new Number($('#anyoHasta').val() + $('#mesHasta').val());
+      
+        if(fechaDesde > fechaHasta) {
+          alert('La fecha desde no puede ser posterior a la fecha hasta');
+          return;
+        }
+      
+        $('#btAceptar').prop('disabled', true);
+      
+        if($('#mesDesde').val() != '') {
+          window.location = '/gastos/historico/' + $('#mesDesde').val() + '-' + $('#anyoDesde').val() + '/' + $('#mesHasta').val() + '-' + $('#anyoHasta').val() + '/' + $('#tipoGrafico').val();
+        }
+        else {
+          window.location = '/gastos/historico/' + $('#anyoDesde').val() + '/' + $('#anyoHasta').val() + '/' + $('#tipoGrafico').val();
+        }
+      });
+    
+      if(tipoGrafico == 'barras') {
+        dibujarGraficoBarras();
+      }
+      else if(tipoGrafico == 'curva') {
+        dibujarGraficoCurva();
+      }
+    });

@@ -1,0 +1,103 @@
+extends layout
+block append head
+  script(type='text/javascript', src='/javascripts/funciones.js')
+block content
+  div(style='width:70%; text-align:center; margin-top:15px; margin-left:auto; margin-right:auto')
+    table
+      tr
+        td(valign='bottom')
+          .fotoLuka
+            img(src='/images/fotoPortadaLuka.jpg', width='300')
+            .datosPersonales(style='margin-top:10px; margin-right:auto; margin-left:auto; width:310px; height:80px')
+              table(cellspacing='3')
+                tr
+                  td.nombreCampo(align='left') Nombre
+                  td.valorCampo(align='left') Luka Barreda Vivas
+                tr
+                  td.nombreCampo(align='left') Nacimiento
+                  td.valorCampo(align='left') 21 de Agosto de 2012 (3:33 h)
+                tr
+                  td.nombreCampo(align='left') Peso
+                  td.valorCampo(align='left') 2.550 gr
+                tr
+                  td.nombreCampo(align='left') Altura
+                  td.valorCampo(align='left') 46 cm
+        td(width='50px')
+        td(valign='bottom')
+          .fotoMia
+            img(src='/images/fotoPortadaMia.jpg', width='300')
+            .datosPersonales(style='margin-top:10px; margin-right:auto; margin-left:auto; width:310px; height:80px')
+              table(cellspacing='3')
+                tr
+                  td.nombreCampo(align='left') Nombre
+                  td.valorCampo(align='left') Mia Barreda Vivas
+                tr
+                  td.nombreCampo(align='left') Nacimiento
+                  td.valorCampo(align='left') 30 de Octubre de 2014 (20:02 h)
+                tr
+                  td.nombreCampo(align='left') Peso
+                  td.valorCampo(align='left') 3.000 gr
+                tr
+                  td.nombreCampo(align='left') Altura
+                  td.valorCampo(align='left') 47 cm
+  #bloqueoPantalla
+  #mailing
+  
+  script.
+    function notificar(respuesta) {
+      var email = $('#email');
+      
+      if(respuesta) {
+        if(email.val().length == 0) {
+          alert('Debes especificar tu dirección de correo');
+          email.focus();
+          return;
+        }
+        if(!emailCorrecto(email.val())) {
+          alert('El formato de la dirección de correo especificada no es correcto');
+          email.focus();
+          return;
+        }
+      }
+      
+      $.ajax({
+        type: 'post',
+        url: '/mailing',
+        data: {mailing: respuesta, email: $('#email').val()},
+        success: function(data) {
+          $('#bloqueoPantalla').hide();
+          $('#mailing').hide();
+          if(respuesta) {
+            alert('Tu dirección de correo ha sido registrada');
+          }
+        }
+      });
+    }
+    
+    $(function() {
+      var mailing = #{mailing};
+      
+      if(!mailing) {
+        $('#bloqueoPantalla').css('width', $(document).width());
+        $('#bloqueoPantalla').css('height', $(document).height());
+      
+        $('#mailing').html('<div>Si quieres ser notificado cuando haya nuevas publicaciones, introduce tu dirección de correo</div>' +
+                           '<div style="margin-top:10px; text-align:center"><input type="text" id="email" name="email" size="50"></div>' +
+                           '<div style="margin-top:10px; text-align:center">' +
+                           '<input type="button" value="notificarme" style="width:100px" onclick="notificar(true)">' +
+                           '<input type="button" value="ya la registré" style="width:100px; margin-left:25px" onclick="notificar(false)">' +
+                           '<input type="button" value="no, gracias" style="width:100px; margin-left:25px" onclick="notificar(false)">' +
+                           '</div>');
+        
+        var width = $('#mailing').css('width').substring(0, $('#mailing').css('width').length - 2);
+        var height = $('#mailing').css('height').substring(0, $('#mailing').css('height').length - 2);
+        var left = ($(window).width() / 2) - (width / 2);
+        var top = ($(window).height() / 2) - (height / 2);
+      
+        $('#mailing').css('left', left);
+        $('#mailing').css('top', top);
+      
+        $('#bloqueoPantalla').show();
+        $('#mailing').show();
+      }
+    });
