@@ -22,7 +22,7 @@
     "formidable": "1.0.15",
     "jade": "1.5.0",
     "method-override": "2.1.2",
-    "moment": "2.8.1",
+    "moment": "2.27.0",
     "mongodb": "2.0.42",
     "mongoose": "4.1.9",
     "nodemailer": "1.1.1",
